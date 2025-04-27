@@ -3,6 +3,7 @@ import { existsSync, mkdirSync } from 'fs';
 
 import chalk from 'chalk';
 
+import CheckCmd from './commands/check-cmd.js';
 import LibrariesCmd from './commands/libraries-cmd.js';
 import MirrorCmd from './commands/mirror-cmd.js';
 import ServerCmd from './commands/server-cmd.js';
@@ -24,12 +25,14 @@ class H5PContentTypeHub {
     this.updateCmd = new UpdateCmd();
     this.mirrorCmd = new MirrorCmd();
     this.librariesCmd = new LibrariesCmd();
+    this.checkCmd = new CheckCmd();
 
     this.commands = {
       server: (...args) => this.handleServer(args),
       update: (...args) => this.handleUpdate(args),
       mirror: (...args) => this.handleMirror(args),
       libraries: (...args) => this.handleLibraries(args),
+      check: (...args) => this.handleCheck(args),
     };
   }
 
@@ -108,6 +111,23 @@ class H5PContentTypeHub {
 
       default:
         console.warn(chalk.red('> Missing library command'));
+        break;
+    }
+  }
+
+  async handleCheck(args) {
+    const [command, arg1] = args;
+
+    switch (command) {
+      case 'check ':
+        if (!arg1) {
+          await this.checkCmd.checkAll();
+          return;
+        }
+        break;
+
+      default:
+        await this.checkCmd.checkAll();
         break;
     }
   }

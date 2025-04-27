@@ -1,0 +1,928 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Semantics Building Object Array",
+  "type": "array",
+  "description": "Supposed to match https://h5p.org/semantics except for where the specification is violated by H5P Groups own content types or how H5P core handles things.",
+  "items": {
+    "$ref": "#/definitions/semanticsField"
+  },
+  "definitions": {
+    "semanticsField": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "text",
+            "number",
+            "boolean",
+            "group",
+            "list",
+            "select",
+            "library",
+            "image",
+            "video",
+            "audio",
+            "file"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string",
+          "description": "The H5P specification says this field was required, but in practice it is not. Following the practice here."
+        },
+        "description": {
+          "type": "string"
+        },
+        "optional": {
+          "type": "boolean"
+        },
+        "default": {},
+        "importance": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "common": {
+          "type": "boolean"
+        },
+        "maxLength": {
+          "type": "number",
+          "default": 255
+        },
+        "regexp": {
+          "type": "object",
+          "properties": {
+            "pattern": {
+              "type": "string"
+            },
+            "modifiers": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "pattern"
+          ],
+          "additionalProperties": false
+        },
+        "enterMode": {
+          "type": "string",
+          "enum": [
+            "p",
+            "div"
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "description": "HTML tags that should be added to the CKEditor. br will be added by H5P core by default, but it is still used in some content types. Documenting de-facto status, not what the outdated specification says.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "a",
+              "blockquote",
+              "br",
+              "code",
+              "del",
+              "em",
+              "h1",
+              "h2",
+              "h3",
+              "h4",
+              "h5",
+              "h6",
+              "hr",
+              "ol",
+              "p",
+              "pre",
+              "strike",
+              "strong",
+              "sub",
+              "sup",
+              "table",
+              "u",
+              "ul"
+            ]
+          }
+        },
+        "font": {
+          "type": "object",
+          "properties": {
+            "size": {
+              "oneOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "css": {
+                      "type": "string"
+                    },
+                    "default": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "css"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "family": {
+              "oneOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "css": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "css"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "color": {
+              "oneOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "label": {
+                      "type": "string"
+                    },
+                    "css": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "label",
+                    "css"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "background": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "steps": {
+          "type": "number"
+        },
+        "decimals": {
+          "type": "number",
+          "default": 0
+        },
+        "entity": {
+          "type": "string",
+          "description": "It is unclear whether this field is really mandatoty for a list field or not."
+        },
+        "options": {},
+        "widget": {
+          "type": "string"
+        },
+        "widgets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "label"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "isSubContent": {
+          "type": "boolean"
+        },
+        "expanded": {
+          "type": "boolean"
+        },
+        "important": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string"
+            },
+            "example": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "field": {
+          "$ref": "#/definitions/semanticsField"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/semanticsField"
+          }
+        },
+        "placeholder": {
+          "type": "string",
+          "description": "Undocumented property. Can be used on text fields to set the placeholder."
+        },
+        "extraAttributes": {
+          "type": "array",
+          "description": "Undocumented property. Can be used on media fields to add extra attributes to the params.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "enableCustomQualityLabel": {
+          "type": "boolean",
+          "description": "Undocumented property. Can be used on video fields to enable custom quality labels."
+        },
+        "unit": {
+          "type": "string",
+          "description": "Undocumented property. Can be used on number fields to automatically add the unit to the number value."
+        },
+        "disableCopyright": {
+          "type": "boolean",
+          "description": "Undocumented property. Can be used on file, image, audio, or video fields to disable the copyright button."
+        },
+        "defaultNum": {
+          "type": "integer",
+          "description": "Undocumented property. Can be used on list fields to set the default number of items in the list."
+        }
+      },
+      "required": [
+        "type",
+        "name"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "text"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "maxLength": {
+                "type": "number",
+                "default": 255
+              },
+              "regexp": {
+                "type": "object",
+                "properties": {
+                  "pattern": {
+                    "type": "string"
+                  },
+                  "modifiers": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "pattern"
+                ],
+                "additionalProperties": false
+              },
+              "enterMode": {
+                "type": "string",
+                "enum": [
+                  "p",
+                  "div"
+                ]
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "a",
+                    "blockquote",
+                    "br",
+                    "code",
+                    "del",
+                    "em",
+                    "h1",
+                    "h2",
+                    "h3",
+                    "h4",
+                    "h5",
+                    "h6",
+                    "hr",
+                    "ol",
+                    "p",
+                    "pre",
+                    "strike",
+                    "strong",
+                    "sub",
+                    "sup",
+                    "table",
+                    "u",
+                    "ul"
+                  ]
+                }
+              },
+              "font": {
+                "$ref": "#/definitions/semanticsField/properties/font"
+              },
+              "important": {
+                "type": "object",
+                "properties": {
+                  "description": {
+                    "type": "string"
+                  },
+                  "example": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "select",
+                  "library"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "number"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "type": "number"
+              },
+              "steps": {
+                "type": "number"
+              },
+              "decimals": {
+                "type": "number",
+                "default": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "boolean"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "group"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "default": {
+                "type": "object"
+              },
+              "isSubContent": {
+                "type": "boolean"
+              },
+              "expanded": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "fields"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "list",
+                  "image",
+                  "video",
+                  "audio",
+                  "file"
+                ]
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "default"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "not": {
+                  "const": "text"
+                }
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "maxLength",
+                "regexp",
+                "enterMode",
+                "tags",
+                "font",
+                "important",
+                "placeholder"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "not": {
+                  "enum": [
+                    "video",
+                    "audio",
+                    "image",
+                    "file"
+                  ]
+                }
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "extraAttributes"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "not": {
+                  "const": "video"
+                }
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "enableCustomQualityLabel"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "not": {
+                  "const": "number"
+                }
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "unit"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "not": {
+                  "enum": [
+                    "file",
+                    "image",
+                    "audio",
+                    "video"
+                  ]
+                }
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "disableCopyright"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "not": {
+                  "const": "list"
+                }
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "defaultNum"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "number",
+                  "list"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "min": {
+                "type": "number"
+              },
+              "max": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "not": {
+                  "enum": [
+                    "number",
+                    "list"
+                  ]
+                }
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "min",
+                "max"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "number"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "steps": {
+                "type": "number"
+              },
+              "decimals": {
+                "type": "number",
+                "default": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "not": {
+                  "enum": [
+                    "number"
+                  ]
+                }
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "steps",
+                "decimals"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "list"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "entity",
+              "field"
+            ],
+            "properties": {
+              "entity": {
+                "type": "string"
+              },
+              "field": {
+                "$ref": "#/definitions/semanticsField"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "not": {
+                  "const": "list"
+                }
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "entity",
+                "field"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "select"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "options"
+            ],
+            "properties": {
+              "options": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "value": {
+                      "type": "string"
+                    },
+                    "label": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "value",
+                    "label"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "library"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "options"
+            ],
+            "properties": {
+              "options": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "not": {
+                  "enum": [
+                    "select",
+                    "library"
+                  ]
+                }
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "options"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "list"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "widgets": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "label": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name",
+                    "label"
+                  ],
+                  "additionalProperties": true
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "not": {
+                  "const": "list"
+                }
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "widgets"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "group"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "fields"
+            ],
+            "properties": {
+              "isSubContent": {
+                "type": "boolean"
+              },
+              "expanded": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "not": {
+                  "const": "group"
+                }
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "isSubContent",
+                "expanded",
+                "fields"
+              ]
+            }
+          }
+        }
+      ],
+      "additionalProperties": true
+    }
+  }
+}

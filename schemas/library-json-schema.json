@@ -1,0 +1,240 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "The title of the library. This is the name that will be displayed in the H5P editor."
+    },
+    "machineName": {
+      "type": "string",
+      "description": "The machine name of the library. This is the unique name that will be used to identify the library in the H5P system.",
+      "pattern": "^[\\w0-9\\-\\.]{1,255}$"
+    },
+    "majorVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 99999
+    },
+    "minorVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 99999
+    },
+    "patchVersion": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 99999
+    },
+    "runnable": {
+      "type": "integer",
+      "description": "If set to 1, the library is a content type that can run standalone, not just a subcontent or mere library.",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "coreApi": {
+      "type": "object",
+      "description": "Specifies the required version of H5P Core API. If not set, 1.0 is assumed, and the library must not use any functionality added in newer versions of H5P Core.",
+      "properties": {
+        "majorVersion": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99999,
+          "default": 1
+        },
+        "minorVersion": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 99999,
+          "default": 0
+        }
+      },
+      "required": [
+        "majorVersion",
+        "minorVersion"
+      ]
+    },
+    "author": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "license": {
+      "type": "string",
+      "pattern": "^(cc-by|cc-by-sa|cc-by-nd|cc-by-nc|cc-by-nc-sa|cc-by-nc-nd|pd|cr|MIT|GPL1|GPL2|GPL3|MPL|MPL2)$"
+    },
+    "description": {
+      "type": "string"
+    },
+    "preloadedDependencies": {
+      "type": "array",
+      "description": "Defines libraries that will be preloaded before this library in the view.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "machineName": {
+            "type": "string",
+            "pattern": "^[\\w0-9\\-\\.]{1,255}$"
+          },
+          "majorVersion": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 99999
+          },
+          "minorVersion": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 99999
+          }
+        },
+        "required": [
+          "machineName",
+          "majorVersion",
+          "minorVersion"
+        ]
+      }
+    },
+    "dynamicDependencies": {
+      "type": "array",
+      "description": "Defines libraries that should be loaded dynamically. Officialy documented, but not implemented.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "machineName": {
+            "type": "string",
+            "pattern": "^[\\w0-9\\-\\.]{1,255}$"
+          },
+          "majorVersion": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 99999
+          },
+          "minorVersion": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 99999
+          }
+        },
+        "required": [
+          "machineName",
+          "majorVersion",
+          "minorVersion"
+        ]
+      }
+    },
+    "editorDependencies": {
+      "type": "array",
+      "description": "Defines libraries (usually editor widgets) that will be preloaded before this library in the editor. Currently not officially documented",
+      "items": {
+        "type": "object",
+        "properties": {
+          "machineName": {
+            "type": "string",
+            "pattern": "^[\\w0-9\\-\\.]{1,255}$"
+          },
+          "majorVersion": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 99999
+          },
+          "minorVersion": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 99999
+          }
+        },
+        "required": [
+          "machineName",
+          "majorVersion",
+          "minorVersion"
+        ]
+      }
+    },
+    "preloadedJs": {
+      "type": "array",
+      "description": "Defines JavaScript files that belong to this library and will be loaded.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "pattern": "^((\\\\|\\/)?[A-Za-z_\\-\\s0-9\\.]+)+\\.js$"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    },
+    "preloadedCss": {
+      "type": "array",
+      "description": "Defines CSS files that belong to this library and will be loaded.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "pattern": "^((\\\\|\\/)?[A-Za-z_\\-\\s0-9\\.]+)+\\.css$"
+          }
+        },
+        "required": [
+          "path"
+        ]
+      }
+    },
+    "embedTypes": {
+      "type": "array",
+      "description": "Determines whether the content will be displayed in a div only or in an iframe. Iframe is usually safer.",
+      "default": [
+        "div"
+      ],
+      "items": {
+        "type": "string",
+        "pattern": "^(iframe|IFRAME|div|DIV)$"
+      }
+    },
+    "fullscreen": {
+      "type": "integer",
+      "description": "If set to one, the internal H5P fullscreen button will be shown.",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "metadataSettings": {
+      "type": "object",
+      "description": "Settings for the metadata fields in the editor.",
+      "properties": {
+        "disable": {
+          "type": "integer",
+          "description": "If set to 1, the metadata fields will be disabled in the editor.",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "disableExtraTitleField": {
+          "type": "integer",
+          "description": "If set to 1, the extra title field will be disabled in the editor, but metadata can still be edited.",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "metadata": {
+      "type": "number",
+      "description": "Undocumented property, but used in H5P.BranchingQuestion.",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "contentType": {
+      "type": "string",
+      "description": "Undocumented property. Provided by quite a number of libraries, but does not seem to be processed.",
+      "maxLength": 255
+    }
+  },
+  "required": [
+    "title",
+    "machineName",
+    "majorVersion",
+    "minorVersion",
+    "patchVersion",
+    "runnable"
+  ],
+  "additionalProperties": false
+}

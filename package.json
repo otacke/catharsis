@@ -10,13 +10,14 @@
   },
   "type": "module",
   "bin": {
-    "h5p": "./h5p-cth.js"
+    "h5p": "./catharsis.js"
   },
   "devDependencies": {
     "eslint-config-snordian-h5p": "github:otacke/eslint-config-snordian-h5p"
   },
   "dependencies": {
     "adm-zip": "^0.5.16",
+    "ajv": "^8.17.1",
     "chalk": "^5.4.1",
     "express": "^5.1.0",
     "multer": "^1.4.5-lts.2",

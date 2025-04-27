@@ -7,7 +7,6 @@ import {
   decomposeLibraryFileName, decomposeUberName, getLibraryFolderNames, readLibraryJson
 } from '../services/h5p-utils.js';
 import { compareVersions, loadConfig } from '../services/utils.js';
-import chalk from 'chalk';
 
 export default class Libraries {
 
@@ -36,6 +35,10 @@ export default class Libraries {
    */
   getLibraryFolderNames() {
     return getLibraryFolderNames(this.basepath);
+  }
+
+  getBasePath() {
+    return this.basepath;
   }
 
   /**
