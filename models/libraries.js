@@ -76,13 +76,40 @@ export default class Libraries {
     });
   }
 
+  isEditorLibrary(uberName) {
+    if (!uberName.startsWith('H5PEditor.')) {
+      return false;
+    }
+
+    const libraryJson = this.getLibraryJson(uberName);
+    if (!libraryJson) {
+      return false;
+    }
+
+    if (libraryJson.runnable === 1) {
+      return false;
+    }
+
+    const semantics = getSemanticsJson(uberName);
+    if (!semantics) {
+      return true;
+    }
+
+    return false;
+  }
+
   /**
    * Remove a library folder from the filesystem.
    * @param {string} libraryFileName The name of the library file to remove.
    */
   remove(libraryFileName) {
     let { machineName, majorVersion, minorVersion } = decomposeLibraryFileName(libraryFileName);
-    removeDirectorySync(this.getFolderPath(`${machineName} ${majorVersion}.${minorVersion}`));
+    const folderPath = this.getFolderPath(`${machineName} ${majorVersion}.${minorVersion}`);
+    if (!folderPath) {
+      return;
+    }
+
+    removeDirectorySync(folderPath);
 
     this.update();
   }
@@ -132,8 +159,8 @@ export default class Libraries {
     if (majorVersion && minorVersion) {
       libraryJson = this.data.find((library) => {
         return library.machineName === machineName &&
-          library.majorVersion === majorVersion &&
-          library.minorVersion === minorVersion;
+          library.majorVersion.toString() === majorVersion &&
+          library.minorVersion.toString() === minorVersion;
       });
     }
 

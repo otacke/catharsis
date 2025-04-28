@@ -6,7 +6,8 @@ import Ajv from 'ajv';
 import chalk from 'chalk';
 
 import Libraries from '../models/libraries.js';
-import { decomposeLibraryFileName } from '../services/h5p-utils.js';
+import { decomposeLibraryFileName,  } from '../services/h5p-utils.js';
+import { compareLanguages, removeUntranslatables } from '../services/translation-utils.js';
 
 const getSegmentByPath = (jsonData, path) => {
   const segments = path.split('/').filter((segment) => segment !== '');
@@ -50,24 +51,30 @@ const processSegment = (segment) => {
   }
 };
 
-const createMessage = (text, uberName) => {
-  if (!uberName) {
-    return text;
-  }
+const displayMessages = (messages = [], groupedBy = 'uberName') => {
+  messages.sort((a, b) => {
+    if (a[groupedBy] < b[groupedBy]) {
+      return -1;
+    }
+    if (a[groupedBy] > b[groupedBy]) {
+      return 1;
+    }
+    return 0;
+  });
 
-  return `${uberName}: ${text}`;
-};
+  messages.forEach((message) => {
+    const text = (message.uberName) ? `${message.uberName}: ${message.text ?? ''}` : message.text ?? '';
 
-const display = (text, level = 'error') => {
-  if (level === 'info') {
-    console.warn(chalk.cyan(`- ${text}`));
-  }
-  else if (level === 'warning') {
-    console.warn(chalk.yellow(`- ${text}`));
-  }
-  else {
-    console.error(chalk.red(`- ${text}`));
-  }
+    if (message.level === 'info') {
+      console.log(chalk.cyan(`- ${text}`));
+    }
+    else if (message.level === 'warning') {
+      console.log(chalk.yellow(`- ${text}`));
+    }
+    else {
+      console.log(chalk.red(`- ${text}`));
+    }
+  });
 };
 
 export default class CheckCmd {
@@ -80,30 +87,38 @@ export default class CheckCmd {
   }
 
   checkAll() {
-    console.warn(chalk.blue('Running checks...'));
-
-    this.checkH5PSpecification();
-    // TODO: Make that function return a list of mesages including ubername, text and level
-
-    console.warn(chalk.blue('Done running checks'));
+    console.log(chalk.blue('Running all checks...'));
+    displayMessages(this.checkH5PSpecification());
+    console.log(chalk.blue('Done running all checks.'));
   }
 
   checkH5PSpecification() {
-    console.warn(chalk.blue('Checking H5P specification...'));
+    const messages = [];
 
     const basePath = this.libraries.getBasePath();
     const libaryFolderNames = this.libraries.getLibraryFolderNames();
+
     libaryFolderNames.forEach((folder) => {
       const fullPath = path.join(basePath, folder);
-      const libraryJson = this.checkLibraryJson(fullPath);
-      this.checkPreloadedFiles(fullPath, libraryJson, 'preloadedJs', 'JS');
-      this.checkPreloadedFiles(fullPath, libraryJson, 'preloadedCss', 'CSS');
-      const semanticsJson = this.checkSemanticsJson(fullPath, libraryJson);
-      this.checkTranslations(fullPath, libraryJson, semanticsJson);
-      this.checkIcon(fullPath, libraryJson);
+      const { machineName, majorVersion, minorVersion } = decomposeLibraryFileName(folder);
+      const uberName = `${machineName} ${majorVersion}.${minorVersion}`;
+
+      messages.push(...this.checkLibraryJson(fullPath));
+
+      const libraryJson = this.libraries.getLibraryJson(uberName);
+      if (!libraryJson) {
+        return messages;
+      }
+
+      messages.push(...this.checkPreloadedFiles(fullPath, libraryJson, 'preloadedJs', 'JS'));
+      messages.push(...this.checkPreloadedFiles(fullPath, libraryJson, 'preloadedCss', 'CSS'));
+      messages.push(...this.checkSemanticsJson(fullPath, libraryJson));
+      messages.push(...this.checkIcon(fullPath, libraryJson));
+      messages.push(...this.checkTranslations(fullPath, libraryJson));
+
     });
 
-    console.warn(chalk.blue('Done checking H5P specification'));
+    return messages;
   }
 
   /**
@@ -112,33 +127,50 @@ export default class CheckCmd {
    * @param {object} libraryJson Library JSON object
    * @param {string} property Property to check ('preloadedJs' or 'preloadedCss')
    * @param {string} fileTypeLabel Label for error messages ('JS' or 'CSS')
+   * @returns {object[]} Array of error messages.
    */
   checkPreloadedFiles(fullPath, libraryJson, property, fileTypeLabel) {
     if (!libraryJson?.[property]?.length > 0) {
-      return;
+      return [];
     }
 
+    const messages = [];
     const { machineName, majorVersion, minorVersion } = decomposeLibraryFileName(path.basename(fullPath));
     const uberName = `${machineName} ${majorVersion}.${minorVersion}`;
 
     libraryJson[property].forEach((file) => {
       const filePath = path.join(fullPath, file.path);
       if (!existsSync(filePath)) {
-        const message = createMessage(`Preloaded ${fileTypeLabel} file not found: "${file.path}"`, uberName);
-        display(message, 'error');
+        messages.push({
+          uberName: uberName,
+          text: `Preloaded ${fileTypeLabel} file not found: "${file.path}"`,
+          level: 'error'
+        });
       }
     });
+
+    return messages;
   }
 
   checkLibraryJson(folder) {
+    if (!folder) {
+      return [];
+    }
+
+    const messages = [];
+
     const { machineName, majorVersion, minorVersion } = decomposeLibraryFileName(path.basename(folder));
     const uberName = `${machineName} ${majorVersion}.${minorVersion}`;
 
     const libraryJsonPath = path.join(folder, 'library.json');
     if (!existsSync(libraryJsonPath)) {
-      const message = createMessage('File "library.json" not found', uberName);
-      display(message, 'error');
-      return;
+      messages.push({
+        uberName,
+        text: 'File "library.json" not found',
+        level: 'error'
+      });
+
+      return messages;
     }
 
     let libraryJson = readFileSync(libraryJsonPath, 'utf8');
@@ -146,10 +178,13 @@ export default class CheckCmd {
       libraryJson = JSON.parse(libraryJson);
     }
     catch (error) {
-      const message = createMessage(`File "library.json" is invalid: ${error.message}`, uberName);
-      display(message, 'error');
+      messages.push({
+        uberName,
+        text: `File "library.json" is invalid: ${error.message}`,
+        level: 'error'
+      });
 
-      return;
+      return messages;
     }
 
     const currentFilePath = fileURLToPath(import.meta.url);
@@ -163,30 +198,39 @@ export default class CheckCmd {
     if (!valid) {
       validate.errors.forEach((error) => {
         if (error.keyword === 'additionalProperties') {
-          const message = createMessage(
-            `In file "library.json", property "${error.params.additionalProperty}" is not allowed`,
-            uberName
-          );
-          display(message, 'warning');
+          messages.push({
+            uberName,
+            text: `In file "library.json", property "${error.params.additionalProperty}" is not allowed`,
+            level: 'warning'
+          });
         }
         else if (error.keyword === 'required') {
-          const message = createMessage(`File "library.json" ${error.message}`, uberName);
-          display(message, 'warning');
+          messages.push({
+            uberName,
+            text: `File "library.json" ${error.message}`,
+            level: 'warning'
+          });
         }
         else {
-          const message = createMessage(
-            `In file "library.json", property value of "${error.instancePath}" ${error.message}`,
-            uberName
-          );
-          display(message, 'warning');
+          messages.push({
+            uberName,
+            text: `In file "library.json", property value of "${error.instancePath}" ${error.message}`,
+            level: 'warning'
+          });
         }
       });
     }
 
-    return libraryJson;
+    return messages;
   }
 
   checkSemanticsJson(folder, libraryJson) {
+    if (!folder || !libraryJson) {
+      return [];
+    }
+
+    const messages = [];
+
     const isRunnable = libraryJson?.runnable === 1;
 
     const { machineName, majorVersion, minorVersion } = decomposeLibraryFileName(path.basename(folder));
@@ -195,12 +239,16 @@ export default class CheckCmd {
     const semanticsPath = path.join(folder, 'semantics.json');
     if (!existsSync(semanticsPath)) {
       if (!isRunnable) {
-        return false;
+        return [];
       }
       else {
-        const message = createMessage('File "semantics.json" not found', uberName);
-        display(message, 'warning');
-        return false;
+        messages.push({
+          uberName,
+          text: 'File "semantics.json" not found',
+          level: 'error'
+        });
+
+        return messages;
       }
     }
 
@@ -210,9 +258,13 @@ export default class CheckCmd {
     }
     catch (error) {
       if (isRunnable) {
-        const message = createMessage(`File "semantics.json" is invalid: ${error.message}`, uberName);
-        display(message, 'error');
-        return false;
+        messages.push({
+          uberName,
+          text: `File "semantics.json" is invalid: ${error.message}`,
+          level: 'error'
+        });
+
+        return messages;
       }
     }
 
@@ -230,7 +282,6 @@ export default class CheckCmd {
         }
 
         const { key, value } = getSegmentByPath(semanticsJson, error.instancePath);
-
         const parts = [
           `In file "semantics.json", property value of field "${key}" ("${error.instancePath}") ${error.message}`,
           `The problematic value is: ${JSON.stringify(value)}.`
@@ -240,104 +291,185 @@ export default class CheckCmd {
           parts.push(`The invalid additional property is "${error.params.additionalProperty}".`);
         }
 
-        const message = createMessage(parts.join(' '), uberName);
-        display(message, 'warning');
+        messages.push({
+          uberName,
+          text: parts.join(' '),
+          level: 'warning'
+        });
       });
     }
 
-    return semanticsJson;
+    return messages;
   }
 
   checkIcon(folder, libraryJson) {
     if (libraryJson?.runnable !== 1) {
-      return; // Only content types should have an icon
+      return []; // Only content types should have an icon
     }
+
+    const messages = [];
 
     const { machineName, majorVersion, minorVersion } = decomposeLibraryFileName(path.basename(folder));
     const uberName = `${machineName} ${majorVersion}.${minorVersion}`;
 
     const iconPath = path.join(folder, 'icon.svg');
     if (!existsSync(iconPath)) {
-      const message = createMessage('File "icon.svg" is missing', uberName);
-      display(message, 'warning');
+      messages.push({
+        uberName,
+        text: 'File "icon.svg" is missing',
+        level: 'warning'
+      });
     }
     else {
       const iconContent = readFileSync(iconPath, 'utf8');
       if (!iconContent.includes('xmlns="http://www.w3.org/2000/svg"')) {
-        const message = createMessage('File "icon.svg" is not a valid SVG file', uberName);
-        display(message, 'warning');
+        messages.push({
+          uberName,
+          text: 'File "icon.svg" is not a valid SVG file',
+          level: 'warning'
+        });
       }
     }
+
+    return messages;
   }
 
-  checkTranslations(folder, libraryJson, semanticsJson) {
-    const hasSemanticsJson = semanticsJson && Object.keys(semanticsJson).length > 0;
-    if (!hasSemanticsJson) {
-      return; // No semantics.json, no translations
+  checkTranslations(folder, libraryJson) {
+    if (!folder || !libraryJson) {
+      return [];
     }
 
     const translationsPath = path.join(folder, 'language');
     if (!existsSync(translationsPath) || !lstatSync(translationsPath).isDirectory()) {
-      return;
+      return [];
     }
+
+    const messages = [];
 
     const { machineName, majorVersion, minorVersion } = decomposeLibraryFileName(path.basename(folder));
     const uberName = `${machineName} ${majorVersion}.${minorVersion}`;
-    const isEditorLibrary = libraryJson?.runnable !== 1 && machineName.startsWith('H5PEditor.');
+
+    const semanticsJson = this.libraries.getSemanticsJson(uberName);
+
+    const isEditorLibrary = libraryJson?.runnable !== 1 && (!semanticsJson || machineName.startsWith('H5PEditor.'));
 
     const translationFiles = readdirSync(translationsPath);
 
     if (!isEditorLibrary && translationFiles.includes('.en.json')) {
-      const message = createMessage('In "language" folder, template file ".en.json" should not exist', uberName);
-      display(message, 'error');
+      messages.push({
+        uberName,
+        text: 'In "language" folder, template file ".en.json" should not exist',
+        level: 'error'
+      });
     }
     else if (isEditorLibrary && !translationFiles.includes('en.json')) {
-      const message = createMessage('In "language" folder, template file "en.json" is missing', uberName);
-      display(message, 'error');
+      messages.push({
+        uberName,
+        text: 'In "language" folder, template file "en.json" should be added.',
+        level: 'warning'
+      });
     }
 
     translationFiles.forEach((file) => {
       if (!file.endsWith('.json')) {
-        const message = createMessage(
-          `In "language" folder, "${file}" is not a JSON file`,
-          uberName
-        );
-        display(message, 'error');
+        messages.push({
+          uberName,
+          text: `In "language" folder, "${file}" is not a JSON file`,
+          level: 'error'
+        });
       }
 
       const languageCode = path.basename(file, '.json');
       if (!isEditorLibrary && languageCode === 'en') {
-        const message = createMessage(
-          'In "language" folder, template file "en.json" must be removed',
-          uberName
-        );
-        display(message, 'error');
+        messages.push({
+          uberName,
+          text: 'In "language" folder, template file "en.json" must be renamed to `.en.json`',
+          level: 'error'
+        });
       }
       else if (isEditorLibrary && languageCode === '.en') {
-        const message = createMessage(
-          'In "language" folder, template file ".en.json" must be renamed to `en.json`',
-          uberName
-        );
-        display(message, 'error');
+        messages.push({
+          uberName,
+          text: 'In "language" folder, template file ".en.json" must be renamed to `en.json`',
+          level: 'error'
+        });
       }
 
       if (languageCode.startsWith('.') && languageCode !== '.en') {
-        const message = createMessage(
-          `In "language" folder, "${file}" must not start with a dot`,
-          uberName
-        );
-        display(message, 'error');
+        messages.push({
+          uberName,
+          text: `In "language" folder, "${file}" must not start with a dot`,
+          level: 'error'
+        });
       }
 
       if (languageCode !== languageCode.toLowerCase()) {
-        const message = createMessage(
-          `In "language" folder, "${file}" must be in lowercase`,
-          uberName
-        );
-        display(message, 'error');
+        messages.push({
+          uberName,
+          text: `In "language" folder, "${file}" must be in lowercase`,
+          level: 'error'
+        });
       }
 
-      // TODO: Check translation file against [.]en.json, create if it does not exist
+      let translationJson = readFileSync(path.join(translationsPath, file), 'utf8');
+      try {
+        translationJson = JSON.parse(translationJson);
+      }
+      catch (error) {
+        messages.push({
+          uberName,
+          text: `Translation file "${file}" is invalid: ${error.message}`,
+          level: 'error'
+        });
+
+        return messages;
+      }
+
+      let translation;
+      let translationTemplate;
+      if (isEditorLibrary) {
+        translation = translationJson;
+        try {
+          translationTemplate = JSON.parse(readFileSync(path.join(translationsPath, 'en.json'), 'utf8'));
+        }
+        catch (error) {
+          messages.push({
+            uberName,
+            text: `Could not check translation file "${file}", because template file "en.json" is invalid or missing.`,
+            level: 'warning'
+          });
+          return messages;
+        }
+      }
+      else {
+        translation = translationJson.semantics;
+        if (!semanticsJson) {
+          messages.push({
+            uberName,
+            text: `Could not check translation file "${file}", because template file ".en.json" is invalid or missing.`,
+            level: 'warning'
+          });
+          return messages;
+        }
+
+        translationTemplate = removeUntranslatables(semanticsJson);
+      }
+
+      const comparison = compareLanguages(translation, translationTemplate);
+
+      if (comparison.errors?.length) {
+        const combinedErrors = comparison.errors.map((error) => {
+          return `${error.text} (${error.path})`;
+        });
+
+        messages.push({
+          uberName,
+          text: `Translation file "${file}" is invalid: ${combinedErrors.join(', ')}`,
+          level: 'error'
+        });
+      }
     });
+
+    return messages;
   }
 }
