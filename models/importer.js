@@ -149,7 +149,7 @@ export default class Importer {
       return true;
     }
     catch (error) {
-      console.warn(error);
+      console.log(error);
 
       return false;
     }

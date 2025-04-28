@@ -28,7 +28,7 @@ export default class ServerCmd {
       const pid = parseInt(readFileSync(this.config.pidFile, 'utf8'), 10);
       try {
         process.kill(pid, 0);
-        console.warn(chalk.yellow(`H5P Content Type Hub Server is already running with PID: ${pid}`));
+        console.log(chalk.yellow(`H5P Content Type Hub Server is already running with PID: ${pid}`));
         return;
       }
       catch (error) {
@@ -60,7 +60,7 @@ export default class ServerCmd {
       });
 
       child.on('exit', (code, signal) => {
-        console.warn(chalk.yellow(`H5P Content Type Hub Server process exited with code ${code} and signal ${signal}`));
+        console.log(chalk.yellow(`H5P Content Type Hub Server process exited with code ${code} and signal ${signal}`));
 
         // Clean up PID file when the server exits
         if (existsSync(this.config.pidFile)) {
@@ -71,15 +71,15 @@ export default class ServerCmd {
 
     const hostname = this.config.ip ?? getLocalIPAddress();
 
-    console.warn(chalk.blue(
+    console.log(chalk.blue(
       `H5P Content Type Hub Server is running on http://${hostname}:${this.config.port} with PID ${process.pid}`
     ));
 
     if (runDetached) {
-      console.warn(chalk.blue('Use \'node catharsis.js server stop\' to stop the server.'));
+      console.log(chalk.blue('Use \'node catharsis.js server stop\' to stop the server.'));
     }
     else {
-      console.warn(chalk.blue('Press Ctrl+C to stop the server.'));
+      console.log(chalk.blue('Press Ctrl+C to stop the server.'));
     }
   }
 
@@ -88,7 +88,7 @@ export default class ServerCmd {
    */
   stop() {
     if (!existsSync(this.config.pidFile)) {
-      console.warn(chalk.blue('H5P Content Type Hub Server is not running.'));
+      console.log(chalk.blue('H5P Content Type Hub Server is not running.'));
       return;
     }
 
@@ -96,12 +96,12 @@ export default class ServerCmd {
     try {
       // Send SIGTERM signal to the process
       process.kill(pid, 'SIGTERM');
-      console.warn(chalk.blue(`Stop signal sent to H5P Content Type Hub Server (PID: ${pid}).`));
+      console.log(chalk.blue(`Stop signal sent to H5P Content Type Hub Server (PID: ${pid}).`));
 
       setTimeout(() => {
         try {
           process.kill(pid, 0);
-          console.warn(chalk.red('Server did not stop gracefully. Force killing...'));
+          console.log(chalk.red('Server did not stop gracefully. Force killing...'));
           process.kill(pid, 'SIGKILL');
         }
         catch (error) {
@@ -114,7 +114,7 @@ export default class ServerCmd {
       }, KILL_TIMEOUT_MS);
     }
     catch (error) {
-      console.warn(chalk.yellow(`No process found with PID: ${pid}. Cleaning up.`));
+      console.log(chalk.yellow(`No process found with PID: ${pid}. Cleaning up.`));
       unlinkSync(this.config.pidFile);
     }
   }

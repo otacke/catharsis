@@ -42,7 +42,7 @@ export default class Exporter {
           const parent = libraries.getLibraryJson(machineName);
           const parentUberName = `${parent.machineName} ${parent.majorVersion}.${parent.minorVersion}`;
 
-          console.warn(chalk.cyan(
+          console.log(chalk.cyan(
             `Library ${dependencyUberName} not found, but used as dependency of ${parentUberName}.`
           ));
         }
@@ -52,7 +52,7 @@ export default class Exporter {
       .forEach((dependencyUberName) => {
         const sourceFolder = libraries.getFolderPath(dependencyUberName);
         if (!sourceFolder) {
-          console.warn(chalk.red(`FOO ${dependencyUberName}`));
+          console.log(chalk.red(`Library source folder not found for ${dependencyUberName}`));
         }
 
         const destinationFolder = path.join(this.tempPath, path.basename(sourceFolder));

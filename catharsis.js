@@ -57,7 +57,7 @@ class H5PContentTypeHub {
         break;
 
       default:
-        console.warn(chalk.red('Missing or invalid server command'));
+        console.log(chalk.red('Missing or invalid server command'));
         break;
     }
   }
@@ -69,7 +69,7 @@ class H5PContentTypeHub {
   async handleMirror(args) {
     const [mirrorURL] = args;
     if (!mirrorURL) {
-      console.warn(chalk.red('> Missing mirror URL'));
+      console.log(chalk.red('> Missing mirror URL'));
       return;
     }
 
@@ -88,13 +88,13 @@ class H5PContentTypeHub {
           this.librariesCmd.list({ runnableOnly: true });
         }
         else {
-          console.warn(chalk.red('> Invalid library command'));
+          console.log(chalk.red('> Invalid library command'));
         }
         break;
 
       case 'add':
         if (!arg1) {
-          console.warn(chalk.red('> Missing archive name'));
+          console.log(chalk.red('> Missing archive name'));
           return;
         }
         await this.librariesCmd.add(arg1);
@@ -102,7 +102,7 @@ class H5PContentTypeHub {
 
       case 'remove':
         if (!arg1) {
-          console.warn(chalk.red('> Missing machine name/uber name'));
+          console.log(chalk.red('> Missing machine name/uber name'));
           return;
         }
         const machineName = arg2 ? `${arg1} ${arg2}` : arg1;
@@ -110,7 +110,7 @@ class H5PContentTypeHub {
         break;
 
       default:
-        console.warn(chalk.red('> Missing library command'));
+        console.log(chalk.red('> Missing library command'));
         break;
     }
   }
@@ -142,13 +142,13 @@ class H5PContentTypeHub {
 
   executeCommand(command, args) {
     if (!command) {
-      console.warn(chalk.red('> Please provide a command'));
+      console.log(chalk.red('> Please provide a command'));
     }
     else if (typeof this.commands[command] === 'function') {
       this.commands[command](...args);
     }
     else {
-      console.warn(chalk.red(`> '${command}' is not a valid command`));
+      console.log(chalk.red(`> '${command}' is not a valid command`));
     }
   }
 }

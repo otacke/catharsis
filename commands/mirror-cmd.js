@@ -30,11 +30,11 @@ export default class MirrorCmd {
     this.libraries.update();
 
     if (!isURL(url)) {
-      console.warn(chalk.red('Invalid URL for mirroring'));
+      console.log(chalk.red('Invalid URL for mirroring'));
       return [];
     }
 
-    console.warn(chalk.yellow(`Mirroring content types from ${url}`));
+    console.log(chalk.blue(`Mirroring content types from ${url}`));
 
     const contentTypes = await this.fetchContentTypes(url);
     if (!contentTypes) {
@@ -48,7 +48,7 @@ export default class MirrorCmd {
     // Does not automatically update the Hub registry and exports!
     updateCmd.updateManifest();
 
-    console.warn(chalk.yellow('Done mirroring content types'));
+    console.log(chalk.blue('Done mirroring content types'));
 
     return uberNamesUpdated;
   }
@@ -61,7 +61,7 @@ export default class MirrorCmd {
   async fetchContentTypes(url) {
     const contentTypes = await fetchContentTypeCache(url);
     if (typeof contentTypes === 'string') {
-      console.warn(chalk.red(contentTypes));
+      console.log(chalk.red(contentTypes));
       return null;
     }
 
@@ -121,7 +121,7 @@ export default class MirrorCmd {
 
     const blob = await fetchH5PContentType(contentTypeURL);
     if (typeof blob === 'string') {
-      console.warn(chalk.red(blob));
+      console.log(chalk.red(blob));
       return false;
     }
 

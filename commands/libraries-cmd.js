@@ -29,12 +29,12 @@ export default class LibrariesCmd {
 
     const list = libraries.getList(options);
     if (list.length === 0) {
-      console.warn(chalk.yellow('No libraries found'));
+      console.log(chalk.yellow('No libraries found'));
       return;
     }
 
     list.forEach((listItem) => {
-      console.warn(chalk.yellow(listItem));
+      console.log(chalk.yellow(listItem));
     });
   }
 
@@ -46,7 +46,7 @@ export default class LibrariesCmd {
     const importer = new Importer();
     const importWasSuccessful = await importer.import(zipFileName);
     if (!importWasSuccessful) {
-      console.warn(chalk.red('Import failed'));
+      console.log(chalk.red('Import failed'));
       return;
     }
 
@@ -78,11 +78,11 @@ export default class LibrariesCmd {
     if (relevantFolders.length > 1) {
       const listString = `${list.map((item) => `- ${item}`).join('\n')}`;
 
-      console.warn(chalk.red(
+      console.log(chalk.red(
         `There are multiple library folders for ${machineName}:`
       ));
-      console.warn(chalk.red(listString));
-      console.warn(chalk.red('Please specify the major.minor version to remove.'));
+      console.log(chalk.red(listString));
+      console.log(chalk.red('Please specify the major.minor version to remove.'));
       return;
     }
     else if (relevantFolders.length === 0) {
@@ -91,10 +91,12 @@ export default class LibrariesCmd {
         message.push(`Did you mean H5P.${uberName}?`);
       }
 
-      console.warn(chalk.red(message.join(' ')));
+      console.log(chalk.red(message.join(' ')));
+      return;
     }
 
     libraries.remove(relevantFolders[0]);
+    console.log(chalk.blue('Library folder removed'));
 
     const latestLibraryJson = libraries.getLibraryJson(machineName);
     if (!latestLibraryJson) {

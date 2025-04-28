@@ -59,7 +59,7 @@ export default class HubRegistry {
       writeFileSync(this.filePath, JSON.stringify(this.data));
     }
     catch (error) {
-      console.warn(chalk.red(
+      console.log(chalk.red(
         'Error: Unable to write to hub-registry.json. Please check permissions on the assets directory.'
       ));
     }

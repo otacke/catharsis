@@ -44,7 +44,7 @@ class H5PServer {
    */
   startCronJobs() {
     (this.config.mirrors ?? []).forEach((mirror) => {
-      console.warn(chalk.blue(`Scheduling mirroring for ${mirror.url}`));
+      console.log(chalk.blue(`Scheduling mirroring for ${mirror.url}`));
 
       const cronJob = cron.schedule(mirror.cron, async () => {
         const uberNamesUpdated = await this.mirror.mirror(mirror.url);
@@ -65,7 +65,7 @@ class H5PServer {
       return;
     }
 
-    console.warn(chalk.blue('Unscheduling mirroring'));
+    console.log(chalk.blue('Unscheduling mirroring'));
     this.cronJobs.forEach((job) => {
       job.stop();
     });
@@ -76,7 +76,7 @@ class H5PServer {
    * Clean up temporary files
    */
   cleanUpTempFiles() {
-    console.warn(chalk.blue('Cleaning up temporary files'));
+    console.log(chalk.blue('Cleaning up temporary files'));
     clearDirectorySync(path.join(this.dirname, '..', 'assets', 'temp'));
   }
 
@@ -181,9 +181,9 @@ class H5PServer {
     this.stopCronJobs();
     this.cleanUpTempFiles();
 
-    console.warn(chalk.blue('H5P Content Type Hub Server stopping...'));
+    console.log(chalk.blue('H5P Content Type Hub Server stopping...'));
     this.server.close(() => {
-      console.warn(chalk.blue('H5P Content Type Hub Server stopped successfully.'));
+      console.log(chalk.blue('H5P Content Type Hub Server stopped successfully.'));
       process.exit(0);
     });
   }

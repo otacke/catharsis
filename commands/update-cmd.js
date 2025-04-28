@@ -17,7 +17,7 @@ const updateServedData = async (uberNamesToUpdate) => {
   const config = loadConfig();
 
   if (existsSync(config.updateLockFile)) {
-    console.warn(chalk.red('Update of server data already in progress. Skipping!'));
+    console.log(chalk.red('Update of server data already in progress. Skipping!'));
     return;
   }
 
@@ -36,7 +36,7 @@ const updateServedData = async (uberNamesToUpdate) => {
  * @param {string[]} uberNamesToUpdate Explicit list of uber names to update only.
  */
 const updateHubRegistry = (uberNamesToUpdate = []) => {
-  console.warn(chalk.yellow('Updating hub registry ...'));
+  console.log(chalk.blue('Updating hub registry ...'));
 
   const manifest = new Manifest();
   const libraries = new Libraries();
@@ -57,7 +57,7 @@ const updateHubRegistry = (uberNamesToUpdate = []) => {
   hubRegistry.feed(manifestData, libraries);
   hubRegistry.write();
 
-  console.warn(chalk.yellow('Done updating hub registry'));
+  console.log(chalk.blue('Done updating hub registry'));
 };
 
 /**
@@ -66,7 +66,7 @@ const updateHubRegistry = (uberNamesToUpdate = []) => {
  * @returns {Promise<void>}
  */
 const updateExports = async (uberNamesToUpdate = []) => {
-  console.warn(chalk.yellow('Updating export files ...'));
+  console.log(chalk.blue('Updating export files ...'));
 
   const manifest = new Manifest();
   const libraries = new Libraries();
@@ -84,7 +84,7 @@ const updateExports = async (uberNamesToUpdate = []) => {
     machineNames.map((machineName) => exporter.createExport(machineName, libraries))
   );
 
-  console.warn(chalk.yellow('Done updating export files'));
+  console.log(chalk.blue('Done updating export files'));
 };
 
 export default class UpdateCmd {
@@ -107,7 +107,7 @@ export default class UpdateCmd {
    * Update the manifest file from libraries.
    */
   updateManifest() {
-    console.warn(chalk.yellow('Updating manifest ...'));
+    console.log(chalk.blue('Updating manifest ...'));
 
     const manifest = new Manifest();
     const libraries = new Libraries();
@@ -116,6 +116,6 @@ export default class UpdateCmd {
     manifest.updateFromLibraries(libraries);
     manifest.write();
 
-    console.warn(chalk.yellow('Done updating manifest'));
+    console.log(chalk.blue('Done updating manifest'));
   }
 }
