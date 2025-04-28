@@ -180,8 +180,6 @@ export const isFieldTranslatable = (property, value) => {
   }
 
   if (property === 'default') {
-    if (parseInt(value)) {
-
     if (typeof value !== 'string' || value.trim().length === 0) {
       return false; // Empty strings
     }
