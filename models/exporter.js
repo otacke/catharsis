@@ -37,16 +37,6 @@ export default class Exporter {
         // Check for dependencies that are not installed
         const { machineName: dependencyMachineName } = decomposeUberName(dependencyUberName);
         const child = libraries.getLibraryJson(dependencyMachineName);
-        if (!child) {
-          // TODO: This should be left to a Validator class later on
-          const parent = libraries.getLibraryJson(machineName);
-          const parentUberName = `${parent.machineName} ${parent.majorVersion}.${parent.minorVersion}`;
-
-          console.log(chalk.cyan(
-            `Library ${dependencyUberName} not found, but used as dependency of ${parentUberName}.`
-          ));
-        }
-
         return child !== undefined;
       })
       .forEach((dependencyUberName) => {

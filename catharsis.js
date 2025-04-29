@@ -11,7 +11,6 @@ import UpdateCmd from './commands/update-cmd.js';
 
 const DEFAULT_FOLDERS = ['assets', 'assets/libraries', 'assets/exports', 'assets/temp', 'assets/files'];
 
-// TODO: Add validators
 // TODO: Add interface to edit manifest.json
 // TODO: [Add interface to edit config (like git?)]
 // TODO: [Make export files content archives, not mere library archives]
