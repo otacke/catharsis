@@ -78,6 +78,7 @@ class H5PContentTypeHub {
 
   async handleLibraries(args) {
     const [command, arg1, arg2] = args;
+    let machineName;
 
     switch (command) {
       case 'list':
@@ -105,8 +106,17 @@ class H5PContentTypeHub {
           console.log(chalk.red('> Missing machine name/uber name'));
           return;
         }
-        const machineName = arg2 ? `${arg1} ${arg2}` : arg1;
+        machineName = arg2 ? `${arg1} ${arg2}` : arg1;
         await this.librariesCmd.remove(machineName);
+        break;
+
+      case 'dependencies':
+        if (!arg1) {
+          console.log(chalk.red('> Missing machine name/uber name'));
+          return;
+        }
+        machineName = arg2 ? `${arg1} ${arg2}` : arg1;
+        this.librariesCmd.listDependencies(machineName);
         break;
 
       default:
@@ -116,18 +126,11 @@ class H5PContentTypeHub {
   }
 
   async handleCheck(args) {
-    const [command, arg1] = args;
+    const [command, arg1, arg2] = args;
 
     switch (command) {
-      case 'check ':
-        if (!arg1) {
-          await this.checkCmd.checkAll();
-          return;
-        }
-        break;
-
       default:
-        await this.checkCmd.checkAll();
+        this.checkCmd.checkAll();
         break;
     }
   }

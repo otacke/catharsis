@@ -114,4 +114,11 @@ export default class LibrariesCmd {
     // Does not automatically update the Hub registry and exports!
     updateCmd.updateManifest();
   }
+
+  listDependencies(uberName) {
+    console.log(chalk.cyan(`Dependencies for ${uberName}:`));
+
+    const dependencies = this.libraries.getDependencies(uberName);
+    console.log(chalk.cyan(dependencies.map((dependency) => `- ${dependency}`).join('\n')));
+  }
 }

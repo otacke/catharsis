@@ -6,7 +6,7 @@ import Ajv from 'ajv';
 import chalk from 'chalk';
 
 import Libraries from '../models/libraries.js';
-import { decomposeLibraryFileName,  } from '../services/h5p-utils.js';
+import { decomposeLibraryFileName, decomposeUberName,  } from '../services/h5p-utils.js';
 import { compareLanguages, removeUntranslatables } from '../services/translation-utils.js';
 
 const getSegmentByPath = (jsonData, path) => {
@@ -88,7 +88,12 @@ export default class CheckCmd {
 
   checkAll() {
     console.log(chalk.blue('Running all checks...'));
-    displayMessages(this.checkH5PSpecification());
+    const messages = [];
+    messages.push(...this.checkH5PSpecification());
+    messages.push(...this.checkDependencies());
+
+    displayMessages(messages);
+
     console.log(chalk.blue('Done running all checks.'));
   }
 
@@ -471,5 +476,75 @@ export default class CheckCmd {
     });
 
     return messages;
+  }
+
+  checkDependencies() {
+    const messages = [];
+
+    const libaryFolderNames = this.libraries.getLibraryFolderNames();
+
+    libaryFolderNames.forEach((folder) => {
+      const { machineName, majorVersion, minorVersion } = decomposeLibraryFileName(folder);
+      const uberName = `${machineName} ${majorVersion}.${minorVersion}`;
+
+      messages.push(...this.checkForConflictingDependencies(uberName));
+    });
+
+    return messages;
+  }
+
+  checkForConflictingDependencies(uberName) {
+    const dependencyList = this.libraries.compileTotalDependencyList(uberName);
+
+    let machineNameList = dependencyList.map((dependency) => {
+      const { machineName, majorVersion, minorVersion } = decomposeUberName(dependency);
+      return {
+        machineName: machineName,
+        version: `${majorVersion}.${minorVersion}`
+      };
+    });
+
+    // Remove all entries where machineName is unique
+    const machineNameCount = {};
+    machineNameList.forEach((entry) => {
+      if (!machineNameCount[entry.machineName]) {
+        machineNameCount[entry.machineName] = 0;
+      }
+      machineNameCount[entry.machineName]++;
+    });
+    machineNameList = machineNameList.filter((entry) => {
+      return machineNameCount[entry.machineName] > 1;
+    });
+
+    if (machineNameList.length === 0) {
+      return [];
+    }
+
+    const groupedMachineNames = {};
+    machineNameList.forEach((entry) => {
+      if (!groupedMachineNames[entry.machineName]) {
+        groupedMachineNames[entry.machineName] = [];
+      }
+      groupedMachineNames[entry.machineName].push(entry.version);
+    });
+    machineNameList = Object.entries(groupedMachineNames).map(([machineName, versions]) => {
+      return {
+        machineName: machineName,
+        versions: versions
+      };
+    });
+
+    return machineNameList.map((entry) => {
+      const parts = [
+        'There are conflicting dependencies throughout the dependency tree:',
+        `"${entry.machineName}" is required in multiple versions ${entry.versions.join(', ')}`
+      ];
+
+      return {
+        uberName: uberName,
+        text: parts.join(' '),
+        level: 'error'
+      };
+    });
   }
 }

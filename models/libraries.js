@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 
 import { removeDirectorySync } from '../services/fs-utils.js';
 import {
-  decomposeLibraryFileName, decomposeUberName, getLibraryFolderNames, readLibraryJson
+  decomposeLibraryFileName, decomposeUberName, findH5PDependenciesInSemantics, getLibraryFolderNames, readLibraryJson
 } from '../services/h5p-utils.js';
 import { compareVersions, loadConfig } from '../services/utils.js';
 
@@ -74,6 +74,75 @@ export default class Libraries {
       const versionString = `${libraryJson.majorVersion}.${libraryJson.minorVersion}.${libraryJson.patchVersion}`;
       return `${libraryJson.machineName} ${versionString}`;
     });
+  }
+
+  compileTotalDependencyList(uberName, checked = [], dependencies = []) {
+    const uberNameForMinorVersion = this.getUbernameForMinorVersion(uberName);
+    if (checked.includes(uberNameForMinorVersion)) {
+      return dependencies;
+    }
+
+    checked.push(uberNameForMinorVersion);
+
+    const myDependencies = this.getDependencies(uberName);
+    dependencies.push(...myDependencies);
+    dependencies = [...new Set(dependencies)];
+
+    if (checked.length === dependencies.length) {
+      return dependencies;
+    }
+
+    const toCheck = dependencies.filter((dependency) => !checked.includes(dependency));
+
+    let all = [...dependencies, ...this.compileTotalDependencyList(toCheck[0], checked, dependencies)];
+    all = [...new Set(all)];
+
+    return all;
+  }
+
+  getDependencies(uberName, options = {}) {
+    options.type = options.type ?? 'all';
+    const dependencies = [];
+
+    const uberNameForMinorVersion = this.getUbernameForMinorVersion(uberName);
+    if (options.type === 'all' || options.type === 'mandatory') {
+      dependencies.push(uberNameForMinorVersion);
+
+      const libraryJson = this.getLibraryJson(uberName, { exact: true });
+      if (!libraryJson) {
+        return [];
+      }
+
+      const preloadedDependencies = (libraryJson?.preloadedDependencies ?? []).map(
+        (dependency) => `${dependency.machineName} ${dependency.majorVersion}.${dependency.minorVersion}`
+      );
+      dependencies.push(...preloadedDependencies);
+
+      const editorDependencies = (libraryJson?.editorDependencies ?? []).map(
+        (dependency) => `${dependency.machineName} ${dependency.majorVersion}.${dependency.minorVersion}`
+      );
+      dependencies.push(...editorDependencies);
+    }
+
+    if (options.type === 'all' || options.type === 'optional') {
+      const semantics = this.getSemanticsJson(uberName);
+      if (semantics) {
+        const semanticsDependencies = findH5PDependenciesInSemantics(semantics);
+        dependencies.push(...semanticsDependencies);
+      }
+    }
+
+    return [...new Set(dependencies)];
+  }
+
+  getUbernameForMinorVersion(uberName) {
+    const { machineName, majorVersion, minorVersion } = decomposeUberName(uberName);
+    if (!majorVersion || !minorVersion) {
+      const library = this.getLibraryJson(uberName);
+      return `${machineName} ${library.majorVersion}.${library.minorVersion}`;
+    }
+
+    return `${machineName} ${majorVersion}.${minorVersion}`;
   }
 
   isEditorLibrary(uberName) {
@@ -150,9 +219,13 @@ export default class Libraries {
   /**
    * Get library.json for the uber name or latest version found for machine name.
    * @param {string} uberName Uber name or machine name of the library.
+   * @param {object} options Options for getting the library.json.
+   * @param {boolean} options.exact If true, return the exact version specified in the uber name.
    * @returns {object} Library.json of the requested/latest version.
    */
-  getLibraryJson(uberName) {
+  getLibraryJson(uberName, options = {}) {
+    options.exact = options.exact ?? false;
+
     const { machineName, majorVersion, minorVersion } = decomposeUberName(uberName);
 
     let libraryJson;
@@ -166,6 +239,9 @@ export default class Libraries {
 
     if (libraryJson) {
       return libraryJson;
+    }
+    else if (options.exact) {
+      return undefined;
     }
 
     return this.data
