@@ -116,9 +116,28 @@ export default class LibrariesCmd {
   }
 
   listDependencies(uberName) {
-    console.log(chalk.cyan(`Dependencies for ${uberName}:`));
+    console.log(chalk.blue(`Dependencies for ${uberName}:`));
 
-    const dependencies = this.libraries.getDependencies(uberName);
+    const dependencies = this.libraries
+      .getDependencies(uberName)
+      .filter((dependency) => dependency !== uberName);
+
     console.log(chalk.cyan(dependencies.map((dependency) => `- ${dependency}`).join('\n')));
+    console.log('');
+
+    return dependencies;
+  }
+
+  listTotalDependencies(uberName, ignore = []) {
+    if (ignore.includes(uberName)) {
+      return;
+    }
+
+    ignore.push(uberName);
+
+    const dependencies = this.listDependencies(uberName);
+    dependencies.forEach((dependency) => {
+      this.listTotalDependencies(dependency, ignore);
+    });
   }
 }

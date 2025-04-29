@@ -8,6 +8,7 @@ import chalk from 'chalk';
 import Libraries from '../models/libraries.js';
 import { decomposeLibraryFileName, decomposeUberName,  } from '../services/h5p-utils.js';
 import { compareLanguages, removeUntranslatables } from '../services/translation-utils.js';
+import { compareVersions } from '../services/utils.js';
 
 const getSegmentByPath = (jsonData, path) => {
   const segments = path.split('/').filter((segment) => segment !== '');
@@ -488,6 +489,76 @@ export default class CheckCmd {
       const uberName = `${machineName} ${majorVersion}.${minorVersion}`;
 
       messages.push(...this.checkForConflictingDependencies(uberName));
+      messages.push(...this.checkForOutdatedDependencyUse(uberName));
+      messages.push(...this.checkForMissingDependencies(uberName));
+    });
+
+    return messages;
+  }
+
+  checkForMissingDependencies(uberName) {
+    const messages = [];
+
+    const mandatoryDependencyList = this.libraries.getDependencies(uberName, { type: 'mandatory' });
+    mandatoryDependencyList.forEach((dependency) => {
+      const libraryJson = this.libraries.getLibraryJson(dependency, { exact: true });
+      if (!libraryJson) {
+        messages.push({
+          uberName: uberName,
+          text: [
+            `Has a mandatory dependency to "${dependency}, but it is not installed.`,
+            'The dependency must be installed in order to use the library.',
+          ].join(' '),
+          level: 'error'
+        });
+      }
+    });
+
+    const optionalDependencyList = this.libraries.getDependencies(uberName, { type: 'optional' });
+    optionalDependencyList.forEach((dependency) => {
+      const libraryJson = this.libraries.getLibraryJson(dependency, { exact: true });
+      if (!libraryJson) {
+        messages.push({
+          uberName: uberName,
+          text: [
+            `Has an optional dependency to "${dependency}", but it is not installed.`,
+            'Would be nice to install the dependency, to give the users the full experience.',
+          ].join(' '),
+          level: 'warning'
+        });
+      }
+    });
+
+    return messages;
+  }
+
+  checkForOutdatedDependencyUse(uberName) {
+    const messages = [];
+
+    const dependencyList = this.libraries.getDependencies(uberName);
+
+    dependencyList.forEach((dependency) => {
+      const { majorVersion, minorVersion } = decomposeUberName(dependency);
+      const usedVersion = `${majorVersion}.${minorVersion}`;
+
+      const latestVersion = this.libraries.getLatestVersion(dependency);
+      if (!latestVersion) {
+        return;
+      };
+
+      // eslint-disable-next-line no-magic-numbers
+      const latestMinorVersion = latestVersion.split('.').slice(0, 2).join('.');
+      if (compareVersions(usedVersion, latestMinorVersion) === -1) {
+        messages.push({
+          uberName,
+          text: [
+            `Has a dependency to "${dependency}" with version ${usedVersion},`,
+            `but version ${latestMinorVersion} is already available.`,
+            'Should be updated to prevent copy&paste limitations.'
+          ].join(' '),
+          level: 'warning'
+        });
+      }
     });
 
     return messages;
@@ -496,53 +567,39 @@ export default class CheckCmd {
   checkForConflictingDependencies(uberName) {
     const dependencyList = this.libraries.compileTotalDependencyList(uberName);
 
-    let machineNameList = dependencyList.map((dependency) => {
+    // Map dependencies to { machineName, version }
+    const machineNameList = dependencyList.map((dependency) => {
       const { machineName, majorVersion, minorVersion } = decomposeUberName(dependency);
-      return {
-        machineName: machineName,
-        version: `${majorVersion}.${minorVersion}`
-      };
+      return { machineName: machineName, version: `${majorVersion}.${minorVersion}` };
     });
 
-    // Remove all entries where machineName is unique
+    // Count occurrences of each machineName
     const machineNameCount = {};
-    machineNameList.forEach((entry) => {
-      if (!machineNameCount[entry.machineName]) {
-        machineNameCount[entry.machineName] = 0;
-      }
-      machineNameCount[entry.machineName]++;
-    });
-    machineNameList = machineNameList.filter((entry) => {
-      return machineNameCount[entry.machineName] > 1;
-    });
+    for (const entry of machineNameList) {
+      machineNameCount[entry.machineName] = (machineNameCount[entry.machineName] || 0) + 1;
+    }
 
-    if (machineNameList.length === 0) {
+    const duplicates = machineNameList.filter((entry) => machineNameCount[entry.machineName] > 1);
+    if (duplicates.length === 0) {
       return [];
     }
 
+    // Group versions by machineName
     const groupedMachineNames = {};
-    machineNameList.forEach((entry) => {
+    for (const entry of duplicates) {
       if (!groupedMachineNames[entry.machineName]) {
         groupedMachineNames[entry.machineName] = [];
       }
       groupedMachineNames[entry.machineName].push(entry.version);
-    });
-    machineNameList = Object.entries(groupedMachineNames).map(([machineName, versions]) => {
-      return {
-        machineName: machineName,
-        versions: versions
-      };
-    });
+    }
 
-    return machineNameList.map((entry) => {
-      const parts = [
-        'There are conflicting dependencies throughout the dependency tree:',
-        `"${entry.machineName}" is required in multiple versions ${entry.versions.join(', ')}`
-      ];
-
+    return Object.entries(groupedMachineNames).map(([machineName, versions]) => {
       return {
         uberName: uberName,
-        text: parts.join(' '),
+        text: [
+          'There are conflicting dependencies throughout the dependency tree:',
+          `"${machineName}" is required in multiple versions ${versions.join(', ')}`
+        ].join(' '),
         level: 'error'
       };
     });

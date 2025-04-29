@@ -119,6 +119,15 @@ class H5PContentTypeHub {
         this.librariesCmd.listDependencies(machineName);
         break;
 
+      case 'dependencies-total':
+        if (!arg1) {
+          console.log(chalk.red('> Missing machine name/uber name'));
+          return;
+        }
+        machineName = arg2 ? `${arg1} ${arg2}` : arg1;
+        this.librariesCmd.listTotalDependencies(machineName);
+        break;
+
       default:
         console.log(chalk.red('> Missing library command'));
         break;
