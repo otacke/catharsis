@@ -258,27 +258,6 @@ export default class Libraries {
     return iconURL;
   }
 
-  // TODO: Having this does not make sense. The patch version should not be expected in the file name
-  // and should rather be sanitized when creating the folder
-  getLatestFolderPath(uberName) {
-    const { machineName } = decomposeUberName(uberName);
-
-    const libraryJson = this.getLibraryJson(machineName);
-    if (!libraryJson) {
-      return;
-    }
-
-    let folder = `${machineName}-${libraryJson.majorVersion}.${libraryJson.minorVersion}.${libraryJson.patchVersion}`;
-    if (!existsSync(path.join(this.basepath, folder))) {
-      folder = `${machineName}-${libraryJson.majorVersion}.${libraryJson.minorVersion}`;
-    }
-    if (!existsSync(path.join(this.basepath, folder))) {
-      return;
-    }
-
-    return path.join(this.basepath, folder);
-  }
-
   /**
    * Get the folder path for the library specified by the uber name.
    * @param {string} uberName Uber name of the library.
