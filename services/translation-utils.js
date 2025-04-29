@@ -71,7 +71,10 @@ export const compareLanguages = (candidate, template, errors = [], path = '') =>
       if (Object.keys(candidate[property]).length !== Object.keys(template[property]).length) {
         errors.push({
           path: currentPath,
-          text: `Mismatch for "${property}": Different length ${JSON.stringify(candidate[property])} VS ${JSON.stringify(template[property])}`
+          text: [
+            `Mismatch for "${property}": Different length between `,
+            `${JSON.stringify(candidate[property])} VS ${JSON.stringify(template[property])}`
+          ].join(' ')
         });
         continue;
       }
