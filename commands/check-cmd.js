@@ -52,12 +52,14 @@ const processSegment = (segment) => {
   }
 };
 
-const displayMessages = (messages = [], groupedBy = 'uberName') => {
+const displayMessages = (messages = [], options = {}) => {
+  options.groupedBy = options.groupedBy ?? 'uberName';
+
   messages.sort((a, b) => {
-    if (a[groupedBy] < b[groupedBy]) {
+    if (a[options.groupedBy] < b[options.groupedBy]) {
       return -1;
     }
-    if (a[groupedBy] > b[groupedBy]) {
+    if (a[options.groupedBy] > b[options.groupedBy]) {
       return 1;
     }
     return 0;
@@ -93,7 +95,7 @@ export default class CheckCmd {
     messages.push(...this.checkH5PSpecification());
     messages.push(...this.checkDependencies());
 
-    displayMessages(messages);
+    displayMessages(messages, { groupedBy: 'level' });
 
     console.log(chalk.blue('Done running all checks.'));
   }
