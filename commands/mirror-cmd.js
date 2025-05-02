@@ -87,7 +87,7 @@ export default class MirrorCmd {
     let remoteVersionIsNewer = localVersions.length === 0;
     for (const localVersion of localVersions) {
       const versionComparison = compareVersions(remoteVersion, localVersion);
-      if (versionComparison < 0) {
+      if (versionComparison <= 0) {
         // Remote version is older
         break;
       }
@@ -96,9 +96,9 @@ export default class MirrorCmd {
     }
 
     if (!remoteVersionIsNewer) {
-      return; // Skip if we already have a newer version
+      await this.updateLocalMetadata(item);
+      return; // Skip if we already have a newer version, but update metadata
     }
-
     const importWasSuccessful = await this.importContentType(item.id, url);
 
     const localVersion = this.libraries.getLatestVersion(item.id) ?? '0.0.0';

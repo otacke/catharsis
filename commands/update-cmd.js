@@ -114,7 +114,6 @@ export default class UpdateCmd {
 
     manifest.syncMachineNames(libraries.getMachineNamesOfContentTypes());
     manifest.updateFromLibraries(libraries);
-    manifest.write();
 
     console.log(chalk.blue('Done updating manifest'));
   }
