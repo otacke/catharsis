@@ -196,9 +196,13 @@ class H5PServer {
     this.setupRoutes();
     this.setupSignalHandlers();
 
-    this.server = this.app.listen(this.config.port, this.config.ip ?? getLocalIPAddress, () => {
-      writeFileSync(this.config.pidFile, process.pid.toString());
-    });
+    this.server = this.app.listen(
+      this.config.port,
+      this.config.listen ?? this.config.hostname ?? getLocalIPAddress(),
+      () => {
+        writeFileSync(this.config.pidFile, process.pid.toString());
+      }
+    );
   }
 }
 

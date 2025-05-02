@@ -108,8 +108,8 @@ export const loadConfig = (defaults = {
         config.hostname = loadedConfig.hostname;
       }
 
-      if (loadedConfig.ip && typeof loadedConfig.ip === 'string') {
-        config.ip = loadedConfig.ip;
+      if (loadedConfig.listen && typeof loadedConfig.listen === 'string') {
+        config.listen = loadedConfig.listen;
       }
 
       if (loadedConfig.port && Number.isInteger(loadedConfig.port)) {
