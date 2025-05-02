@@ -304,6 +304,8 @@ export default class Manifest {
 
       return contentType;
     });
+
+    this.write();
   }
 
   getMachineNames() {
