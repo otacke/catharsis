@@ -47,14 +47,14 @@ The one property that you __must__ set in the configuration is `domain`. It's re
 
 ##### Options
 | __Property__   | __Type__ | __Description__                                                                 | __Required__ |
-| -------------- | -------- |-------------------------------------------------------------------------------- | optional     |
+| -------------- | -------- | ------------------------------------------------------------------------------- | ------------ |
 | protocol       | string   | Protocol to use for URLs, _Default: "https"_                                    | optional     |
 | hostname       | string   | Hostname or static IP address, _Default: "localhost"_                           | optional     |
 | domain         | string   | Domain that hosts catharsis, e.g. `catharsis.your-domain.com`                   | required     |
 | listen         | string   | IP address that Catharsis needs to listen to - may differ from your server IP!  | optional     |
 | port           | number   | Port address, _Default: 8080_                                                   | optional     |
 | pidFile        | string   | Name of file to store the process id when running, _Default: ".server.pid"_     | optional     |
-| updateLockFile | string   | Name of file to indicate an update is in progress, _Default: ".update.lock"_     | optional     |
+| updateLockFile | string   | Name of file to indicate an update is in progress, _Default: ".update.lock"_    | optional     |
 | detached       | boolean  | Default server running mode, _Default: false_                                   | optional     |
 | mirrors        | object[] | List of endpoints to mirror hub cache from                                      | optional     |
 | mirrors[].url  | string   | URL to endpoint to mirror hub cache from                                        | required     |
