@@ -5,7 +5,8 @@ import { fileURLToPath } from 'url';
 
 import chalk from 'chalk';
 
-import { getLocalIPAddress, loadConfig } from '../services/utils.js';
+import { cleanUpTempFiles } from '../services/fs-utils.js';
+import { loadConfig } from '../services/utils.js';
 
 /** @constant {number} KILL_TIMEOUT_MS Timeout for killing the process in ms. */
 const KILL_TIMEOUT_MS = 2000;
@@ -69,10 +70,11 @@ export default class ServerCmd {
       });
     }
 
-    const hostname = this.config.ip ?? getLocalIPAddress();
-
     console.log(chalk.blue(
-      `H5P Content Type Hub Server is running on http://${hostname}:${this.config.port} with PID ${process.pid}`
+      [
+        'H5P Content Type Hub Server is running on',
+        `http://${this.config.hostname}:${this.config.port} with PID ${process.pid}`
+      ].join(' ')
     ));
 
     if (runDetached) {
@@ -87,6 +89,9 @@ export default class ServerCmd {
    * Stop the server.
    */
   stop() {
+    console.log(chalk.blue('Cleaning up temporary files'));
+    cleanUpTempFiles();
+
     if (!existsSync(this.config.pidFile)) {
       console.log(chalk.blue('H5P Content Type Hub Server is not running.'));
       return;

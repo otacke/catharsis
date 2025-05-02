@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { readdirSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -10,8 +10,8 @@ import cron from 'node-cron';
 
 import MirrorCmd from './mirror-cmd.js';
 import UpdateCmd from './update-cmd.js';
-import { clearDirectorySync } from '../services/fs-utils.js';
-import { isValidUUID, loadConfig } from '../services/utils.js';
+import { cleanUpTempFiles } from '../services/fs-utils.js';
+import { getLocalIPAddress, isValidUUID, loadConfig } from '../services/utils.js';
 
 /** @constant {number} HTTP_ERROR_BAD_REQUEST Error code for bad request. */
 const HTTP_ERROR_BAD_REQUEST = 400;
@@ -70,14 +70,6 @@ class H5PServer {
       job.stop();
     });
     this.cronJobs = [];
-  }
-
-  /**
-   * Clean up temporary files
-   */
-  cleanUpTempFiles() {
-    console.log(chalk.blue('Cleaning up temporary files'));
-    clearDirectorySync(path.join(this.dirname, '..', 'assets', 'temp'));
   }
 
   /**
@@ -179,7 +171,13 @@ class H5PServer {
    */
   shutdown() {
     this.stopCronJobs();
-    this.cleanUpTempFiles();
+
+    console.log(chalk.blue('Cleaning up temporary files'));
+    cleanUpTempFiles();
+
+    if (existsSync(this.config.pidFile)) {
+      unlinkSync(this.config.pidFile);
+    }
 
     console.log(chalk.blue('H5P Content Type Hub Server stopping...'));
     this.server.close(() => {
@@ -198,7 +196,7 @@ class H5PServer {
     this.setupRoutes();
     this.setupSignalHandlers();
 
-    this.server = this.app.listen(this.config.port, this.config.ip, () => {
+    this.server = this.app.listen(this.config.port, this.config.ip ?? getLocalIPAddress, () => {
       writeFileSync(this.config.pidFile, process.pid.toString());
     });
   }

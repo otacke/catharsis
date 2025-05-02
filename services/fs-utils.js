@@ -1,5 +1,14 @@
 import { existsSync, lstatSync, readdirSync, rmdirSync, statSync, unlinkSync } from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+/**
+ * Clean up temporary files
+ */
+export const cleanUpTempFiles = () => {
+  const dirname = path.dirname(fileURLToPath(import.meta.url));
+  clearDirectorySync(path.join(dirname, '..', 'assets', 'temp'));
+}
 
 /**
  * Recursively remove a directory and its contents.

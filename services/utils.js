@@ -108,6 +108,10 @@ export const loadConfig = (defaults = {
         config.hostname = loadedConfig.hostname;
       }
 
+      if (loadedConfig.ip && typeof loadedConfig.ip === 'string') {
+        config.ip = loadedConfig.ip;
+      }
+
       if (loadedConfig.port && Number.isInteger(loadedConfig.port)) {
         config.port = loadedConfig.port;
       }
@@ -118,10 +122,6 @@ export const loadConfig = (defaults = {
 
       if (loadedConfig.updateLockFile && typeof loadedConfig.updateLockFile === 'string') {
         config.updateLockFile = loadedConfig.updateLockFile;
-      }
-
-      if (typeof loadedConfig.ip === 'string') {
-        config.ip = loadedConfig.ip;
       }
 
       if (typeof loadedConfig.detached === 'boolean') {
