@@ -327,7 +327,7 @@ export default class Libraries {
 
     let iconURL;
     if (this.hasIcon(machineName)) {
-      const base = `${this.config.protocol}://${this.config.domain ?? this.config.hostname}}`;
+      const base = `${this.config.protocol}://${this.config.domain ?? this.config.hostname}`;
       iconURL = `${base}/libraries/${machineName}-${libraryJson.majorVersion}.${libraryJson.minorVersion}/icon.svg`;
     }
 
