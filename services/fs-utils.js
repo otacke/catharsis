@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 export const cleanUpTempFiles = () => {
   const dirname = path.dirname(fileURLToPath(import.meta.url));
   clearDirectorySync(path.join(dirname, '..', 'assets', 'temp'));
-}
+};
 
 /**
  * Recursively remove a directory and its contents.
