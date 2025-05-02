@@ -26,7 +26,8 @@
     "validator": "^13.15.0"
   },
   "scripts": {
-    "start": "node ./catharsis.js server start attached",
+    "start": "node ./catharsis.js server start",
+    "stop": "node ./catharsis.js server stop",
     "lint": "eslint --ignore-pattern 'node_modules/**' --ignore-pattern 'assets/**'"
   }
 }
