@@ -84,7 +84,7 @@ export default class AssetFiles {
 
       writeFileSync(path.join(this.basepath, name), buffer);
 
-      const base = `${this.config.protocol}://${this.config.hostname}`;
+      const base = `${this.config.protocol}://${this.config.domain ?? this.config.hostname}`;
       const fileURL = `${base}/files/${name}`;
 
       return fileURL;

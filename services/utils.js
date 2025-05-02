@@ -108,6 +108,10 @@ export const loadConfig = (defaults = {
         config.hostname = loadedConfig.hostname;
       }
 
+      if (loadedConfig.domain && typeof loadedConfig.domain === 'string') {
+        config.domain = loadedConfig.domain;
+      }
+
       if (loadedConfig.listen && typeof loadedConfig.listen === 'string') {
         config.listen = loadedConfig.listen;
       }

@@ -73,7 +73,7 @@ export default class ServerCmd {
     console.log(chalk.blue(
       [
         'H5P Content Type Hub Server is running on',
-        `http://${this.config.hostname}:${this.config.port} with PID ${process.pid}`
+        `http://${this.config.domain ?? this.config.hostname}:${this.config.port} with PID ${process.pid}`
       ].join(' ')
     ));
 

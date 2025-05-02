@@ -327,7 +327,7 @@ export default class Libraries {
 
     let iconURL;
     if (this.hasIcon(machineName)) {
-      const base = `${this.config.protocol}://${this.config.hostname}`;
+      const base = `${this.config.protocol}://${this.config.domain ?? this.config.hostname}}`;
       iconURL = `${base}/libraries/${machineName}-${libraryJson.majorVersion}.${libraryJson.minorVersion}/icon.svg`;
     }
 
@@ -346,6 +346,14 @@ export default class Libraries {
     if (!libraryJson) {
       return;
     }
+
+    // TODO: Would be safer to have this.
+    // if (
+    //   majorVersion !== libraryJson.majorVersion.toString() ||
+    //   minorVersion !== libraryJson.minorVersion.toString()
+    // ) {
+    //   return;
+    // }
 
     const version = `${libraryJson.majorVersion}.${libraryJson.minorVersion}`;
     const folderPath = path.join(this.basepath, `${machineName}-${version}`);
