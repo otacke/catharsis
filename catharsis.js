@@ -8,6 +8,8 @@ import LibrariesCmd from './commands/libraries-cmd.js';
 import MirrorCmd from './commands/mirror-cmd.js';
 import ServerCmd from './commands/server-cmd.js';
 import UpdateCmd from './commands/update-cmd.js';
+import Manifest from './models/manifest.js';
+import HubRegistry from './models/hub-registry.js';
 
 const DEFAULT_FOLDERS = ['assets', 'assets/libraries', 'assets/exports', 'assets/temp', 'assets/files'];
 
@@ -20,6 +22,7 @@ const DEFAULT_FOLDERS = ['assets', 'assets/libraries', 'assets/exports', 'assets
 class H5PContentTypeHub {
   constructor() {
     this.setupFolders();
+    this.setupFiles();
 
     this.serverCmd = new ServerCmd();
     this.updateCmd = new UpdateCmd();
@@ -150,6 +153,19 @@ class H5PContentTypeHub {
         mkdirSync(folder);
       }
     });
+  }
+
+  setupFiles() {
+    if (!existsSync('assets/manifest.json')) {
+      const manifest = new Manifest();
+      manifest.read();
+      manifest.write();
+    }
+
+    if (!existsSync('assets/hub-registry.json')) {
+      const hubRegistry = new HubRegistry();
+      hubRegistry.write();
+    }
   }
 
   executeCommand(command, args) {
