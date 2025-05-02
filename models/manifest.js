@@ -187,7 +187,6 @@ export default class Manifest {
    */
   write() {
     this.data = sanitize(this.data);
-
     try {
       writeFileSync(this.filePath, JSON.stringify(this.data, null, JSON_INDENTATION));
     }
@@ -254,7 +253,13 @@ export default class Manifest {
 
     const entryIndex = this.data.contentTypes.findIndex((entry) => entry.id === newData.id);
     if (entryIndex !== -1) {
-      this.data.contentTypes[entryIndex] = { ...newData, ...this.data.contentTypes[entryIndex] };
+      Object.keys(newData).forEach((key) => {
+        if (newData[key] === '' || newData[key] === null || newData[key] === undefined) {
+          delete newData[key];
+        }
+      });
+
+      this.data.contentTypes[entryIndex] = { ...this.data.contentTypes[entryIndex], ...newData };
     }
     else {
       this.data.contentTypes.push(newData);
