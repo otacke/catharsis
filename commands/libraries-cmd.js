@@ -25,9 +25,7 @@ export default class LibrariesCmd {
    * @param {string} options.filter.machineName Machine name to filter by.
    */
   list(options = {}) {
-    const libraries = new Libraries();
-
-    const list = libraries.getList(options);
+    const list = this.libraries.getList(options);
     if (list.length === 0) {
       console.log(chalk.yellow('No libraries found'));
       return;
@@ -62,8 +60,7 @@ export default class LibrariesCmd {
   async remove(uberName) {
     const { machineName, majorVersion, minorVersion } = decomposeUberName(uberName);
 
-    const libraries = new Libraries();
-    let relevantFolders = libraries.getLibraryFolderNames();
+    let relevantFolders = this.libraries.getLibraryFolderNames();
     if (majorVersion && minorVersion) {
       relevantFolders = relevantFolders
         .filter((folderName) => folderName.startsWith(`${machineName}-${majorVersion}.${minorVersion}`));
@@ -73,7 +70,7 @@ export default class LibrariesCmd {
         .filter((folderName) => folderName.startsWith(`${machineName}-`));
     }
 
-    let list = libraries.getList({ filter: { machineName } });
+    let list = this.libraries.getList({ filter: { machineName } });
 
     if (relevantFolders.length > 1) {
       const listString = `${list.map((item) => `- ${item}`).join('\n')}`;
@@ -95,16 +92,16 @@ export default class LibrariesCmd {
       return;
     }
 
-    libraries.remove(relevantFolders[0]);
+    this.libraries.remove(relevantFolders[0]);
     console.log(chalk.blue('Library folder removed'));
 
-    const latestLibraryJson = libraries.getLibraryJson(machineName);
+    const latestLibraryJson = this.libraries.getLibraryJson(machineName);
     if (!latestLibraryJson) {
       const manifest = new Manifest();
       manifest.removeEntry(uberName);
     }
 
-    const latestFolderPath = libraries.getFolderPath(uberName);
+    const latestFolderPath = this.libraries.getFolderPath(uberName);
     if (!latestFolderPath) {
       const assetFiles = new AssetFiles();
       assetFiles.remove(uberName);

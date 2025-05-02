@@ -19,6 +19,7 @@ export default class MirrorCmd {
     this.libraries = new Libraries();
     this.importer = new Importer();
     this.assetFiles = new AssetFiles();
+    this.manifest = new Manifest();
   }
 
   /**
@@ -97,14 +98,11 @@ export default class MirrorCmd {
 
     if (!remoteVersionIsNewer) {
       await this.updateLocalMetadata(item);
-      return; // Skip if we already have a newer version, but update metadata
+      return;
     }
     const importWasSuccessful = await this.importContentType(item.id, url);
 
-    const localVersion = this.libraries.getLatestVersion(item.id) ?? '0.0.0';
-    const versionComparison = compareVersions(remoteVersion, localVersion);
-
-    if (importWasSuccessful && versionComparison > 0) {
+    if (importWasSuccessful) {
       await this.updateLocalMetadata(item);
       return `${item.id} ${remoteVersion}`;
     }
@@ -135,11 +133,10 @@ export default class MirrorCmd {
    */
   async updateLocalMetadata(item) {
     this.libraries.update();
-    const manifest = new Manifest();
 
     this.updateIconURL(item);
     await this.updateScreenshots(item);
-    manifest.updateEntry(item);
+    this.manifest.updateEntry(item);
   }
 
   /**
