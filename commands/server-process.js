@@ -19,6 +19,9 @@ const HTTP_ERROR_BAD_REQUEST = 400;
 /** @constant {number} HTTP_ERROR_NOT_FOUND Error code for file not found. */
 const HTTP_ERROR_NOT_FOUND = 404;
 
+/** @constant {number} SHUTDOWN_TIMEOUT_MS Timeout for forced shutdown. */
+const SHUTDOWN_TIMEOUT_MS = 10000;
+
 class H5PServer {
 
   /**
@@ -184,6 +187,11 @@ class H5PServer {
       console.log(chalk.blue('H5P Content Type Hub Server stopped successfully.'));
       process.exit(0);
     });
+
+    setTimeout(() => {
+      console.error('Forcing shutdown after timeout.');
+      process.exit(1);
+    }, SHUTDOWN_TIMEOUT_MS);
   }
 
   /**
