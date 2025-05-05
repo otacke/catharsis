@@ -451,6 +451,15 @@ export default class CheckCmd {
       }
       else {
         translation = translationJson.semantics;
+        if (!translation) {
+          messages.push({
+            uberName,
+            text: `Translation file "${file}" seems to be invalid.`,
+            level: 'error'
+          });
+          return messages;
+        }
+
         if (!semanticsJson) {
           messages.push({
             uberName,
