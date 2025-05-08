@@ -113,8 +113,11 @@ const setFallbackValues = (manifestData = {}) => {
  * @param {string} licenseId The license ID.
  * @returns {object|null} The license attributes or null if not found.
  */
-const setLicenseAttributes = (licenseId) => {
-  // TODO: Complete for other licenses (not used so far)
+const setLicenseAttributes = (licenseId) => { 
+  /*
+   * TODO: Complete for other licenses (not used so far), put in separate JSON file, fetch from there
+   * and serve it at `licenses` endpoint (see https://github.com/otacke/catharsis/issues/10)
+   */
   if (licenseId === 'MIT') {
     return {
       useCommercially: true,
