@@ -609,9 +609,10 @@ export default class CheckCmd {
         uberName: uberName,
         text: [
           'There are conflicting dependencies throughout the dependency tree:',
-          `"${machineName}" is required in multiple versions ${versions.join(', ')}`
+          `"${machineName}" is required in multiple versions ${versions.join(', ')}.`,
+          'Should be harmonized, or in some cases, this can cause content to crash.'
         ].join(' '),
-        level: 'error'
+        level: 'warning'
       };
     });
   }
