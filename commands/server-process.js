@@ -9,7 +9,7 @@ import multer from 'multer';
 import cron from 'node-cron';
 
 import MirrorCmd from './mirror-cmd.js';
-import UpdateCmd from './update-cmd.js';
+import UpdateCmd, { updateServedData } from './update-cmd.js';
 import { cleanUpTempFiles } from '../services/fs-utils.js';
 import { getLocalIPAddress, isValidUUID, loadConfig } from '../services/utils.js';
 
@@ -52,7 +52,7 @@ class H5PServer {
       const cronJob = cron.schedule(mirror.cron, async () => {
         const uberNamesUpdated = await this.mirror.mirror(mirror.url);
 
-        this.update.updateServedData(uberNamesUpdated);
+        updateServedData(uberNamesUpdated);
       });
 
       this.cronJobs.push(cronJob);

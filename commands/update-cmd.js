@@ -13,7 +13,7 @@ import { loadConfig } from '../services/utils.js';
  * Update the served data that users can access.
  * @param {string[]} uberNamesToUpdate Explicit list of uber names to update only.
  */
-const updateServedData = async (uberNamesToUpdate) => {
+export const updateServedData = async (uberNamesToUpdate) => {
   const config = loadConfig();
 
   if (existsSync(config.updateLockFile)) {
