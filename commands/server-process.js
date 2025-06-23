@@ -51,8 +51,7 @@ class H5PServer {
 
       const cronJob = cron.schedule(mirror.cron, async () => {
         const uberNamesUpdated = await this.mirror.mirror(mirror.url);
-
-        updateServedData(uberNamesUpdated);
+        await updateServedData(uberNamesUpdated);
       });
 
       this.cronJobs.push(cronJob);
