@@ -113,7 +113,7 @@ const setFallbackValues = (manifestData = {}) => {
  * @param {string} licenseId The license ID.
  * @returns {object|null} The license attributes or null if not found.
  */
-const setLicenseAttributes = (licenseId) => { 
+const setLicenseAttributes = (licenseId) => {
   /*
    * TODO: Complete for other licenses (not used so far), put in separate JSON file, fetch from there
    * and serve it at `licenses` endpoint (see https://github.com/otacke/catharsis/issues/10)
@@ -221,10 +221,62 @@ export default class Manifest {
   /**
    * Retrieve the content type entry from manifest.json.
    * @param {string} machineName Machine name of the content type to be retrieved.
+   * @param {string|null} [path] Optional path to a specific property in the content type entry.
    * @returns {object|undefined} Content type entry if found, undefined otherwise.
    */
-  getEntry(machineName) {
-    return this.data.contentTypes.find((entry) => entry.id === machineName);
+  getEntry(machineName, path = null) {
+    const entry = this.data.contentTypes.find((entry) => entry.id === machineName);
+
+    if (!path) {
+      return entry;
+    }
+
+    return this.findProperty(path, entry);
+  }
+
+  /**
+   * Find a property in a JSON object by path.
+   * @param {string} path The path to the property, e.g. 'title', 'screenshots[0].url'.
+   * @param {object} json The JSON object to search in.
+   * @returns {*} The value of the property if found, null otherwise.
+   */
+  findProperty(path, json) {
+    if (typeof path !== 'string' || typeof json !== 'object' || json === null) {
+      return null;
+    }
+
+    const pathSplits = path.split('.');
+    let propertyName = pathSplits[0];
+    let index = null;
+
+    const indexMatch = propertyName.match(/(.+)\[(\d+)\]$/);
+    if (indexMatch) {
+      propertyName = indexMatch[1];
+      index = parseInt(indexMatch[2]);
+    }
+
+    if (!json.hasOwnProperty(propertyName)) {
+      return null;
+    }
+
+    const propertyValue = json[propertyName];
+
+    if (pathSplits.length === 1) {
+      if (index === null) {
+        return propertyValue;
+      }
+
+      if (Array.isArray(propertyValue) && index >= 0 && index < propertyValue.length) {
+        return propertyValue[index];
+      }
+
+      return null;
+    }
+
+    const nextPath = pathSplits.slice(1).join('.');
+    const nextJson = (Array.isArray(propertyValue) && index !== null) ? propertyValue[index] : propertyValue;
+
+    return this.findProperty(nextPath, nextJson);
   }
 
   /**

@@ -5,6 +5,7 @@ import chalk from 'chalk';
 
 import CheckCmd from './commands/check-cmd.js';
 import LibrariesCmd from './commands/libraries-cmd.js';
+import ManifestCmd from './commands/manifest-cmd.js';
 import MirrorCmd from './commands/mirror-cmd.js';
 import ServerCmd from './commands/server-cmd.js';
 import UpdateCmd from './commands/update-cmd.js';
@@ -29,6 +30,7 @@ class H5PContentTypeHub {
     this.updateCmd = new UpdateCmd();
     this.mirrorCmd = new MirrorCmd();
     this.librariesCmd = new LibrariesCmd();
+    this.manifestCmd = new ManifestCmd();
     this.checkCmd = new CheckCmd();
 
     this.commands = {
@@ -37,6 +39,7 @@ class H5PContentTypeHub {
       mirror: (...args) => this.handleMirror(args),
       libraries: (...args) => this.handleLibraries(args),
       check: (...args) => this.handleCheck(args),
+      manifest: (...args) => this.handleManifest(args),
     };
   }
 
@@ -147,6 +150,33 @@ class H5PContentTypeHub {
         break;
     }
   }
+
+  handleManifest(args) {
+    const [command, machineName, path, value] = args;
+
+    switch (command) {
+      case 'list':
+        if (!machineName) {
+          console.log(chalk.red('> Missing machine name'));
+          return;
+        }
+
+        this.manifestCmd.list(machineName, path, value);
+        break;
+
+      case 'edit':
+        if (!machineName || !path || !value) {
+          console.log(chalk.red('> Missing machine name, path or value'));
+          return;
+        }
+
+        break;
+      default:
+        console.log(chalk.red('Missing or invalid manifest command'));
+        break;
+    }
+  }
+
 
   setupFolders() {
     DEFAULT_FOLDERS.forEach((folder) => {
