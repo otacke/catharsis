@@ -300,100 +300,7 @@ Example to add the contents of `file.h5p`:
 node ./catharsis.js libraries add /path/to/my/file.h5p
 ```
 
-##### Metadata
-Note that commands for updating the metadata inside for added libraries are still missing! If you want to add descriptions, screenshots, etc. have a look at `assets/manifest.json` and edit it manually for now. Beware that you must ensure a valid JSON structure.
-
-An entry will look like this (the order of properties may vary):
-
-```
-  {
-    "id": "H5P.Foo",
-    "title": "Foo",
-    "createdAt": "2025-05-02T16:56:56.556Z",
-    "updatedAt": "2025-05-02T16:56:56.556Z",
-    "icon": "https://catharsis.your-domain.com/libraries/H5P.Foo-1.0/icon.svg",
-    "license": {
-      "id": "MIT",
-      "attributes": {
-        "useCommercially": true,
-        "modifiable": true,
-        "distributable": true,
-        "sublicensable": true,
-        "canHoldLiable": false,
-        "mustIncludeCopyright": true,
-        "mustIncludeLicense": true
-      }
-    },
-    "owner": "Foo Bar",
-    "isRecommended": false,
-    "screenshots": [],
-    "categories": [
-      "Other"
-    ],
-    "summary": "",
-    "description": "",
-    "example": "",
-    "tutorial": "",
-    "keywords": []
-  }
-```
-
-The entry will contain values that can be determined from the `library.json` file. You may particularly be interested in:
-
-###### screenshots
-You can provide screenshots that will be shown in the H5P Hub client. To do so, rename your screenshots to meet the format `machineName-screenshot-index.extension` where
-- `machineName` is the content types machine name (`id` in manifest.json),
-- `index` is a numerical index for the screenshots, and
-- `extension` is the common file type extension, e.g. `.png` for PNG images.
-
-Example: `H5P.Foo-screenshot-0.png` for the 1st screenshot, `H5P.Foo-screenshot-1.png` for the 2nd screenshot, etc.
-
-Then copy the screenshot files to `assets/files`.
-
-Afterwards, modify the `screenshots` entry inside your `assets/manifest.json` file like this to add the URLs accompanied by an alternative text for the image:
-
-```
-"screenshots": [
-  {
-    "url": "https://catharsis.your-domain.com/files/H5P.Foo-screenshot-0.png",
-    "alt": "1st screenshot"
-  },
-  {
-    "url": "https://catharsis.your-domain.com/files/H5P.MultiMediaChoice-screenshot-1.png",
-    "alt": "2nd screenshot"
-  }
-],
-```
-
-###### categories
-It's not quite clear what this field is used for. It's obviously used for categorizing the content type and could hold multiple categories, but the options are not clear. All content types served by H5P Group only contain one item which is either "Tasks", "Larger Resources" or "Other". Not setting this value does not break anything.
-
-Example: `"categories": [ "Other" ],`
-
-###### summary
-This property should hold a very short description of what the content type can bs used for. It will be displayed in the H5P Hub client directly underneath the content type title.
-
-Example: `"summary": "Do foo and bar",`
-
-###### description
-This property holds a longer description to tell authors what they can do with this content type. In the H5P Hub client, the description is displayed on the "Details" view.
-
-Example: `"description": "With foo, you can do bar, batz and yada. You can upload x and then let students do z with it.",
-
-###### example
-The `example` property is supposed to hold a URL that leads to sample content that the author can try out. If the property is supplied, in the H5P Hub client there will be a button linking to it in the "Details" view. Also, a button will show above the H5P editor form.
-
-Example: `"example": "https://h5p.org/drag-the-words",`
-
-###### tutorial
-The `tutorial` property can hold a URL linking to a tutorial that can give authors some idea how to use the content type. If the property is supplied, above the H5P editor form, there will be a button linking to the URL.
-
-Example: `"tutorial": "https://h5p.org/documentation/content-author-guide/tutorials-for-authors/drag-the-words",`
-
-###### keywords
-The `keywords` property can hold multiple keywords that are supposed to help the author find the content type when using the search field in the H5P Hub client.
-
-Example: `"keywords": ["foo", "bar", "batz"],`
+Please refer to the [manifest description] for learning about how to add descriptions, screenshots, etc.
 
 #### remove
 The `remove` subcommand is used to remove an H5P library from `assets/libraries`. The subcommand expects the so called machine name of an H5P library as an argument. If there are multiple versions for that machine name installed, Catharsis will issue a message. You will then have to specify the version number of the library as well in order to remove it.
@@ -424,6 +331,12 @@ Dependencies for H5P.CoursePresentation 1.25:
 The `dependencies-total` subcommand works just like the [dependencies subcommand](#dependencies), but does not only list the direct dependencies, but their dependencies and their dependencies and ...
 
 Note that this command may be renamed and/or the output may change in the future.
+
+### Manifest
+The manifest command can be used to interact with the information that will be served to the H5P Hub clients. Currently, there is only the `list` subcommand. Subcommands to modify the values still need to be implemented. For changing those manually, please refer to the [manifest description].
+
+#### list
+The `list` subcommand is meant to display metadata about a content type. It requires a `machine` name argument, (e.g. H5P.CoursePresentation) to select what content type the metadata should be listed. You can optionally add a `path` argument (e.g. `description` or `screenshots[1].url`) to only get that specific value.
 
 ### Check
 The `check` command will perform a number of checks on all the H5P libraries inside the `assets/libraries` directory:
@@ -462,6 +375,101 @@ The endpoints are hardcoded into the core of H5P, which sits underneath the cont
 Catharsis allows you to offer alternative endpoints to fetch content types from - not from H5P Groups servers, but from your own. That allows you to fully control what content types are served. This can be useful if within your organization you want to limit or extend the number of available content types - there are plenty that are not served by H5P Group. Or maybe you want a feasible way to share your own content types with the H5P community. And there may be more reasons.
 
 Since in most cases the endpoints are fixed in H5P core, Catharsis needs to be accompanied by changes to the platform that H5P runs on. This could be overwriting the endpoints manually or by additional plugins that do the job. Using additional plugins is the better approach, of course, as they allow to make the changes update-proof and they can offer extra features, e. g. fetching content types from multiple H5P Content Type Hub servers, fetching them in regular intervals, etc.
+
+### Manifest description
+If you want to add descriptions, screenshots, etc. have a look at `assets/manifest.json` and edit it manually for now. Beware that you must ensure a valid JSON structure.
+
+An entry will look like this (the order of properties may vary):
+
+```
+  {
+    "id": "H5P.Foo",
+    "title": "Foo",
+    "createdAt": "2025-05-02T16:56:56.556Z",
+    "updatedAt": "2025-05-02T16:56:56.556Z",
+    "icon": "https://catharsis.your-domain.com/libraries/H5P.Foo-1.0/icon.svg",
+    "license": {
+      "id": "MIT",
+      "attributes": {
+        "useCommercially": true,
+        "modifiable": true,
+        "distributable": true,
+        "sublicensable": true,
+        "canHoldLiable": false,
+        "mustIncludeCopyright": true,
+        "mustIncludeLicense": true
+      }
+    },
+    "owner": "Foo Bar",
+    "isRecommended": false,
+    "screenshots": [],
+    "categories": [
+      "Other"
+    ],
+    "summary": "",
+    "description": "",
+    "example": "",
+    "tutorial": "",
+    "keywords": []
+  }
+```
+
+The entry will contain values that can be determined from the `library.json` file. You may particularly be interested in:
+
+#### screenshots
+You can provide screenshots that will be shown in the H5P Hub client. To do so, rename your screenshots to meet the format `machineName-screenshot-index.extension` where
+- `machineName` is the content types machine name (`id` in manifest.json),
+- `index` is a numerical index for the screenshots, and
+- `extension` is the common file type extension, e.g. `.png` for PNG images.
+
+Example: `H5P.Foo-screenshot-0.png` for the 1st screenshot, `H5P.Foo-screenshot-1.png` for the 2nd screenshot, etc.
+
+Then copy the screenshot files to `assets/files`.
+
+Afterwards, modify the `screenshots` entry inside your `assets/manifest.json` file like this to add the URLs accompanied by an alternative text for the image:
+
+```
+"screenshots": [
+  {
+    "url": "https://catharsis.your-domain.com/files/H5P.Foo-screenshot-0.png",
+    "alt": "1st screenshot"
+  },
+  {
+    "url": "https://catharsis.your-domain.com/files/H5P.MultiMediaChoice-screenshot-1.png",
+    "alt": "2nd screenshot"
+  }
+],
+```
+
+#### categories
+It's not quite clear what this field is used for. It's obviously used for categorizing the content type and could hold multiple categories, but the options are not clear. All content types served by H5P Group only contain one item which is either "Tasks", "Larger Resources" or "Other". Not setting this value does not break anything.
+
+Example: `"categories": [ "Other" ],`
+
+#### summary
+This property should hold a very short description of what the content type can bs used for. It will be displayed in the H5P Hub client directly underneath the content type title.
+
+Example: `"summary": "Do foo and bar",`
+
+#### description
+This property holds a longer description to tell authors what they can do with this content type. In the H5P Hub client, the description is displayed on the "Details" view.
+
+Example: `"description": "With foo, you can do bar, batz and yada. You can upload x and then let students do z with it.",
+
+#### example
+The `example` property is supposed to hold a URL that leads to sample content that the author can try out. If the property is supplied, in the H5P Hub client there will be a button linking to it in the "Details" view. Also, a button will show above the H5P editor form.
+
+Example: `"example": "https://h5p.org/drag-the-words",`
+
+#### tutorial
+The `tutorial` property can hold a URL linking to a tutorial that can give authors some idea how to use the content type. If the property is supplied, above the H5P editor form, there will be a button linking to the URL.
+
+Example: `"tutorial": "https://h5p.org/documentation/content-author-guide/tutorials-for-authors/drag-the-words",`
+
+#### keywords
+The `keywords` property can hold multiple keywords that are supposed to help the author find the content type when using the search field in the H5P Hub client.
+
+Example: `"keywords": ["foo", "bar", "batz"],`
 
 ## Future development
 Catharsis is not done yet - what piece of software ever is? There are tasks left to do, there are new features that could make sense. See [issues on github](https://github.com/otacke/catharsis/issues)
