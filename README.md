@@ -203,7 +203,9 @@ As of version 1.0.0-beta.23, the [Lumi desktop application](https://github.com/L
 5. Restart Lumi Desktop.
 
 #### WordPress
-The [H5P plugin for WordPress](https://wordpress.org/plugins/h5p/) used the hardcoded endpoint value from H5P core. You will need to replace it with your endpoint, but beware: Whenever the plugin gets updated, your changes will be overwritten, and the plugin will use the original endpoint. An extra solution will need to be created.
+You can install the additional plugin [Sustainum H5P Conent Type Hub Manager](https://github.com/otacke/sustainum-h5p-content-type-hub-manager/) to change the endpoint (base) URL to your server comfortably.
+
+Alternatively: The [H5P plugin for WordPress](https://wordpress.org/plugins/h5p/) used the hardcoded endpoint value from H5P core. You will need to replace it with your endpoint, but beware: Whenever the plugin gets updated, your changes will be overwritten, and the plugin will use the original endpoint.
 
 1. Find the file h5p.classes.php of your WordPress instance.
 2. Within the file find `api.h5p.org/v1/content-types` and replace it with your own. Note that you cannot specify the protocol here. The plugin will always try to use `https`, so you your server should support TLS.
@@ -271,7 +273,7 @@ node ./catharsis.js update
 ### Libraries
 The libraries command is where you manipulate the available libraries on your server. It knows the subcommands `list`, `add`, `remove`, and `dependencies`
 
-### list
+#### list
 The `list` subcommand will return a list of all the H5P content types including their version number that can be found inside the `assets/libraries` directory like:
 
 ```
