@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { existsSync, mkdirSync, renameSync, unlinkSync, writeFileSync } from 'fs';
+import { mkdirSync, renameSync, unlinkSync, writeFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
