@@ -6,6 +6,7 @@ import AssetFiles from '../models/asset-files.js';
 import Importer from '../models/importer.js';
 import Libraries from '../models/libraries.js';
 import Manifest from '../models/manifest.js';
+import { cleanUpTempFiles } from '../services/fs-utils.js';
 import { fetchContentTypeCache, fetchH5PContentType } from '../services/h5p-content-type-hub-utils.js';
 import { compareVersions } from '../services/utils.js';
 import { decomposeUberName } from '../services/h5p-utils.js';
@@ -50,6 +51,8 @@ export default class MirrorCmd {
     updateCmd.updateManifest();
 
     console.log(chalk.blue('Done mirroring content types'));
+
+    cleanUpTempFiles();
 
     return uberNamesUpdated;
   }

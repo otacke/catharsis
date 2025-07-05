@@ -6,6 +6,7 @@ import Exporter from '../models/exporter.js';
 import HubRegistry from '../models/hub-registry.js';
 import Libraries from '../models/libraries.js';
 import Manifest from '../models/manifest.js';
+import { cleanUpTempFiles } from '../services/fs-utils.js';
 import { decomposeUberName } from '../services/h5p-utils.js';
 import { loadConfig } from '../services/utils.js';
 
@@ -101,6 +102,8 @@ export default class UpdateCmd {
     this.updateManifest();
 
     await updateServedData();
+
+    cleanUpTempFiles();
   }
 
   /**
