@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { mkdirSync, renameSync, unlinkSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, renameSync, unlinkSync, writeFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -90,6 +90,11 @@ const updateLibraries = (tempFolderPath, librariesPath, newIdentityMapping, loca
       if (isNewerPatchVersion(localVersion, newVersion)) {
         removeDirectorySync(path.join(librariesPath, localIdentity.folderName));
       }
+    }
+
+    const existingLibraryPath = path.join(librariesPath, newIdentity.folderName);
+    if (existsSync(existingLibraryPath)) {
+      removeDirectorySync(existingLibraryPath);
     }
 
     renameSync(
