@@ -347,7 +347,7 @@ export default class Manifest {
       contentType.updatedAt = fileDate;
 
       const localIconURL = libraries.getIconURL(libraryJson.machineName) ?? '';
-      contentType.icon = (!contentType.referTo && localIconURL) ? localIconURL : contentType.icon ?? '';
+      contentType.icon = (!contentType.referToOrigin && localIconURL) ? localIconURL : contentType.icon ?? '';
 
       if (!contentType.license && libraryJson.license) {
         const licenseId = libraryJson.license;
