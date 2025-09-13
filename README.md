@@ -59,7 +59,7 @@ The one property that you __must__ set in the configuration is `domain`. It's re
 | mirrors                 | object[] | List of endpoints to mirror hub cache from                                      | optional     |
 | mirrors[].url           | string   | URL to endpoint to mirror hub cache from                                        | required     |
 | mirrors[].cron          | string   | schedule for mirroring in [crontab syntax](https://linux.die.net/man/5/crontab) | required     |
-| mirrors[].referToOrigin | string   | If true, redirect request for content type to original server                   | optional     |
+| mirrors[].referToOrigin | boolean  | If `true`, redirect request for content type to original server                 | optional     |
 
 ##### Example
 An example that forces Catharsis to listen on the IP address `0.0.0.0`, to use the domain "catharsis.your-domain.com", and to mirror H5P Groups's content types from their H5P Content Type Hub server every six hours, and to redirect requests to the content types to the original server would look like this:
