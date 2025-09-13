@@ -74,13 +74,14 @@ class H5PContentTypeHub {
   }
 
   async handleMirror(args) {
-    const [mirrorURL] = args;
+    const [mirrorURL, refer] = args;
     if (!mirrorURL) {
       console.log(chalk.red('> Missing mirror URL'));
       return;
     }
 
-    await this.mirrorCmd.mirror(mirrorURL);
+    const referToOrigin = ['refer', 'referToOrigin', 'refer-to-origin'].includes(refer);
+    await this.mirrorCmd.mirror(mirrorURL, referToOrigin);
   }
 
   async handleLibraries(args) {

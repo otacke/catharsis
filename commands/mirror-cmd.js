@@ -26,9 +26,10 @@ export default class MirrorCmd {
   /**
    * Mirror content types from a remote URL. Does not automaticy update the Hub registry and exports!
    * @param {string} url URL to mirror content types from.
+   * @param {boolean} referToOrigin If true, does not copy assets locally.
    * @returns {Promise<string[]>} List of uberNames of updated content types.
    */
-  async mirror(url) {
+  async mirror(url, referToOrigin = false) {
     this.libraries.update();
 
     if (!isURL(url)) {
@@ -37,8 +38,7 @@ export default class MirrorCmd {
     }
 
     console.log(chalk.blue(`Mirroring content types from ${url}`));
-
-    const contentTypes = await this.fetchContentTypes(url);
+    const contentTypes = await this.fetchContentTypes(url, referToOrigin);
     if (!contentTypes) {
       return [];
     }
@@ -60,14 +60,23 @@ export default class MirrorCmd {
   /**
    * Fetch content types from the remote URL.
    * @param {string} url URL to fetch content types from.
+   * @param {boolean} referToOrigin If true, does not copy assets locally.
    * @returns {Promise<object[]>} List of content types.
    */
-  async fetchContentTypes(url) {
-    const contentTypes = await fetchContentTypeCache(url);
+  async fetchContentTypes(url, referToOrigin) {
+    let contentTypes = await fetchContentTypeCache(url);
     if (typeof contentTypes === 'string') {
       console.log(chalk.red(contentTypes));
       return null;
     }
+
+    contentTypes = contentTypes.map((item) => {
+      if (referToOrigin) {
+        item.referToOrigin = true;
+      }
+      item.origin = url;
+      return item;
+    });
 
     return contentTypes;
   }
@@ -137,8 +146,11 @@ export default class MirrorCmd {
   async updateLocalMetadata(item) {
     this.libraries.update();
 
-    this.updateIconURL(item);
-    await this.updateScreenshots(item);
+    if (!item.referToOrigin) {
+      this.updateIconURL(item);
+      await this.updateScreenshots(item);
+    }
+
     this.manifest.updateEntry(item);
   }
 

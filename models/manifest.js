@@ -31,7 +31,9 @@ const WANTED_MANIFEST_PROPERTIES = [
   'example',
   'tutorial',
   'keywords',
-  'categories'
+  'categories',
+  'referToOrigin',
+  'origin'
 ];
 
 /**

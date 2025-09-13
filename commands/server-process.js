@@ -8,6 +8,7 @@ import express from 'express';
 import multer from 'multer';
 import cron from 'node-cron';
 
+import Manifest from '../models/manifest.js';
 import MirrorCmd from './mirror-cmd.js';
 import UpdateCmd, { updateServedData } from './update-cmd.js';
 import { cleanUpTempFiles } from '../services/fs-utils.js';
@@ -50,7 +51,7 @@ class H5PServer {
       console.log(chalk.blue(`Scheduling mirroring for ${mirror.url}`));
 
       const cronJob = cron.schedule(mirror.cron, async () => {
-        const uberNamesUpdated = await this.mirror.mirror(mirror.url);
+        const uberNamesUpdated = await this.mirror.mirror(mirror.url, mirror.referToOrigin ?? false);
         await updateServedData(uberNamesUpdated);
       });
 
@@ -148,6 +149,11 @@ class H5PServer {
    */
   handleGetContentType(req, res) {
     const { machineName } = req.params;
+    const manifest = new Manifest();
+    const entry = manifest.getEntry(machineName);
+    if (entry?.referToOrigin && entry?.origin) {
+      return res.redirect(`${entry.origin}/${machineName}`);
+    }
 
     const exportsPath = path.join(this.dirname, '..', 'assets', 'exports');
     const exportFiles = readdirSync(exportsPath);

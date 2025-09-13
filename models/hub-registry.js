@@ -47,6 +47,10 @@ export default class HubRegistry {
        */
       contentType.popularity = manifestData.contentTypes.length;
 
+      // Not part of H5P Hub spec, but useful to have in manifest
+      delete contentType.referToOrigin;
+      delete contentType.origin;
+
       return contentType;
     });
   }
