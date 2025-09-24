@@ -192,6 +192,7 @@ export default class Manifest {
    */
   write() {
     this.data = sanitize(this.data);
+
     try {
       writeFileSync(this.filePath, JSON.stringify(this.data, null, JSON_INDENTATION));
     }
@@ -308,6 +309,8 @@ export default class Manifest {
       return;
     }
 
+    this.data = this.read();
+
     const entryIndex = this.data.contentTypes.findIndex((entry) => entry.id === newData.id);
     if (entryIndex !== -1) {
       Object.keys(newData).forEach((key) => {
@@ -328,6 +331,8 @@ export default class Manifest {
   updateFromLibraries(libraries) {
     const machineNames = this.getMachineNames();
     const libraryJsons = libraries.getLibraryJsons(machineNames);
+
+    this.data = this.read();
 
     this.data.contentTypes = this.data.contentTypes.map((contentType) => {
       const libraryJson = libraryJsons.find((libraryJson) => libraryJson.machineName === contentType.id);

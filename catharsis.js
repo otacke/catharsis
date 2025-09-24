@@ -19,7 +19,7 @@ const DEFAULT_FOLDERS = ['assets', 'assets/libraries', 'assets/exports', 'assets
 // TODO: [Add interface to edit config (like git?)]
 // TODO: [Make export files content archives, not mere library archives]
 // TODO: Add browse mode
-// TODO: Clean up .update.lock when shutting down.
+// TODO: Investigate why sometimes temp folder deletion/export generation fails
 
 class H5PContentTypeHub {
   constructor() {

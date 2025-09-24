@@ -187,6 +187,10 @@ class H5PServer {
       unlinkSync(this.config.pidFile);
     }
 
+    if (existsSync(this.config.updateLockFile)) {
+      unlinkSync(this.config.updateLockFile);
+    }
+
     console.log(chalk.blue('H5P Content Type Hub Server stopping...'));
     this.server.close(() => {
       console.log(chalk.blue('H5P Content Type Hub Server stopped successfully.'));
