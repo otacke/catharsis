@@ -1,4 +1,4 @@
-import { existsSync, lstatSync, readdirSync, rmdirSync, statSync, unlinkSync } from 'fs';
+import { existsSync, lstatSync, mkdirSync, readdirSync, rmdirSync, rmSync, unlinkSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -46,22 +46,23 @@ export const removeDirectorySync = (dirPath) => {
  * @param {string} dirPath The path to the directory to clear.
  */
 export const clearDirectorySync = (dirPath) => {
-  if (!existsSync(dirPath)) {
-    return;
+  try {
+    if (!existsSync(dirPath)) {
+      return;
+    }
+
+    // Modern approach - much safer and handles edge cases
+    rmSync(dirPath, {
+      recursive: true,
+      force: true,
+      maxRetries: 3,
+      retryDelay: 100
+    });
+
+    // Recreate the empty directory
+    mkdirSync(dirPath, { recursive: true });
   }
-
-  const files = readdirSync(dirPath);
-
-  files.forEach((file) => {
-    const filePath = path.join(dirPath, file);
-    const stats = statSync(filePath);
-
-    if (stats.isDirectory()) {
-      clearDirectorySync(filePath);
-      rmdirSync(filePath);
-    }
-    else {
-      unlinkSync(filePath);
-    }
-  });
+  catch (error) {
+    console.error(`Error clearing directory ${dirPath}:`, error);
+  }
 };
