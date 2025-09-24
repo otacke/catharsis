@@ -152,9 +152,9 @@ To get a minimal setup to play with, stop your server (by pressing `Ctrl-C` if y
 
 use the following [commands](#commands):
 ```
-node.js ./catharsis mirror https://api.h5p.org/v1/content-types
-node.js ./catharsis update
-node.js ./catharsis server start attached
+node ./catharsis.js mirror https://api.h5p.org/v1/content-types
+node ./catharsis.js update
+node ./catharsis.js server start attached
 ```
 
 You should now be serving the same content types that H5P Group offers.
