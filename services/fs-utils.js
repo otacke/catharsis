@@ -6,8 +6,13 @@ import { fileURLToPath } from 'url';
  * Clean up temporary files
  */
 export const cleanUpTempFiles = () => {
-  const dirname = path.dirname(fileURLToPath(import.meta.url));
-  clearDirectorySync(path.join(dirname, '..', 'assets', 'temp'));
+  try {
+    const dirname = path.dirname(fileURLToPath(import.meta.url));
+    clearDirectorySync(path.join(dirname, '..', 'assets', 'temp'));
+  }
+  catch (error) {
+    console.error('Error cleaning up temporary files:', error);
+  }
 };
 
 /**
