@@ -24,11 +24,14 @@ export const updateServedData = async (uberNamesToUpdate) => {
 
   writeFileSync(config.updateLockFile, 'updating');
 
-  updateHubRegistry(uberNamesToUpdate);
-  await updateExports(uberNamesToUpdate);
-
-  if (existsSync(config.updateLockFile)) {
-    unlinkSync(config.updateLockFile);
+  try {
+    updateHubRegistry(uberNamesToUpdate);
+    await updateExports(uberNamesToUpdate);
+  }
+  finally {
+    if (existsSync(config.updateLockFile)) {
+      unlinkSync(config.updateLockFile);
+    }
   }
 };
 

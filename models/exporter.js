@@ -7,6 +7,7 @@ import AdmZip from 'adm-zip';
 
 import { clearDirectorySync } from '../services/fs-utils.js';
 import { decomposeUberName, findH5PDependenciesInSemantics } from '../services/h5p-utils.js';
+import { createUUID } from '../services/utils.js';
 import Libraries from './libraries.js';
 
 export default class Exporter {
@@ -28,9 +29,10 @@ export default class Exporter {
    * @param {Libraries} libraries Libraries instance.
    */
   async createExport(machineName, libraries) {
-    clearDirectorySync(this.tempPath);
-
     let dependencyUberNames = this.compileDependencies(machineName, libraries);
+
+    const tmpExportDir = createUUID();
+    const tempExportPath = path.join(this.tempPath, tmpExportDir);
 
     dependencyUberNames
       .filter((dependencyUberName) => {
@@ -45,7 +47,7 @@ export default class Exporter {
           console.log(chalk.red(`Library source folder not found for ${dependencyUberName}`));
         }
 
-        const destinationFolder = path.join(this.tempPath, path.basename(sourceFolder));
+        const destinationFolder = path.join(tempExportPath, path.basename(sourceFolder));
 
         cpSync(sourceFolder, destinationFolder, { recursive: true });
       });
@@ -59,9 +61,9 @@ export default class Exporter {
       this.exportsPath,
       `${machineName}-${library.majorVersion}.${library.minorVersion}.${library.patchVersion}.h5p`
     );
-    await this.zipFolder(this.tempPath, zipFilePath);
+    await this.zipFolder(tempExportPath, zipFilePath);
 
-    clearDirectorySync(this.tempPath);
+    clearDirectorySync(tempExportPath);
   }
 
   /**

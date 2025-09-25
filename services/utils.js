@@ -4,6 +4,21 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 /**
+ * Create a UUID.
+ * @returns {string} The generated UUID.
+ */
+export const createUUID = () => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    // eslint-disable-next-line no-magic-numbers
+    const r = Math.random() * 16 | 0;
+    // eslint-disable-next-line no-magic-numbers
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    // eslint-disable-next-line no-magic-numbers
+    return v.toString(16);
+  });
+};
+
+/**
  * Compare two semantic version strings.
  * @param {string} v1 The first version string.
  * @param {string} v2 The second version string.
