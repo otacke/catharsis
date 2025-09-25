@@ -334,6 +334,13 @@ export default class Manifest {
 
     this.data = this.read();
 
+    // Create blank entries for new libraries
+    libraryJsons.forEach((libraryJson) => {
+      if (!this.data.contentTypes.find((contentType) => contentType.id === libraryJson.machineName)) {
+        this.data.contentTypes.push({ id: libraryJson.machineName });
+      }
+    });
+
     this.data.contentTypes = this.data.contentTypes.map((contentType) => {
       const libraryJson = libraryJsons.find((libraryJson) => libraryJson.machineName === contentType.id);
 
