@@ -64,7 +64,7 @@ class H5PContentTypeHub {
         break;
 
       default:
-        console.log(chalk.red('Missing or invalid server command'));
+        console.error(chalk.red('Missing or invalid server command'));
         break;
     }
   }
@@ -76,7 +76,7 @@ class H5PContentTypeHub {
   async handleMirror(args) {
     const [mirrorURL, refer] = args;
     if (!mirrorURL) {
-      console.log(chalk.red('> Missing mirror URL'));
+      console.error(chalk.red('> Missing mirror URL'));
       return;
     }
 
@@ -97,13 +97,13 @@ class H5PContentTypeHub {
           this.librariesCmd.list({ runnableOnly: true });
         }
         else {
-          console.log(chalk.red('> Invalid library command'));
+          console.error(chalk.red('> Invalid library command'));
         }
         break;
 
       case 'add':
         if (!arg1) {
-          console.log(chalk.red('> Missing archive name'));
+          console.error(chalk.red('> Missing archive name'));
           return;
         }
         await this.librariesCmd.add(arg1);
@@ -111,7 +111,7 @@ class H5PContentTypeHub {
 
       case 'remove':
         if (!arg1) {
-          console.log(chalk.red('> Missing machine name/uber name'));
+          console.error(chalk.red('> Missing machine name/uber name'));
           return;
         }
         machineName = arg2 ? `${arg1} ${arg2}` : arg1;
@@ -120,7 +120,7 @@ class H5PContentTypeHub {
 
       case 'dependencies':
         if (!arg1) {
-          console.log(chalk.red('> Missing machine name/uber name'));
+          console.error(chalk.red('> Missing machine name/uber name'));
           return;
         }
         machineName = arg2 ? `${arg1} ${arg2}` : arg1;
@@ -129,7 +129,7 @@ class H5PContentTypeHub {
 
       case 'dependencies-total':
         if (!arg1) {
-          console.log(chalk.red('> Missing machine name/uber name'));
+          console.error(chalk.red('> Missing machine name/uber name'));
           return;
         }
         machineName = arg2 ? `${arg1} ${arg2}` : arg1;
@@ -137,7 +137,7 @@ class H5PContentTypeHub {
         break;
 
       default:
-        console.log(chalk.red('> Missing library command'));
+        console.error(chalk.red('> Missing library command'));
         break;
     }
   }
@@ -158,7 +158,7 @@ class H5PContentTypeHub {
     switch (command) {
       case 'list':
         if (!machineName) {
-          console.log(chalk.red('> Missing machine name'));
+          console.error(chalk.red('> Missing machine name'));
           return;
         }
 
@@ -167,13 +167,13 @@ class H5PContentTypeHub {
 
       case 'edit':
         if (!machineName || !path || !value) {
-          console.log(chalk.red('> Missing machine name, path or value'));
+          console.error(chalk.red('> Missing machine name, path or value'));
           return;
         }
 
         break;
       default:
-        console.log(chalk.red('Missing or invalid manifest command'));
+        console.error(chalk.red('Missing or invalid manifest command'));
         break;
     }
   }
@@ -202,13 +202,13 @@ class H5PContentTypeHub {
 
   executeCommand(command, args) {
     if (!command) {
-      console.log(chalk.red('> Please provide a command'));
+      console.error(chalk.red('> Please provide a command'));
     }
     else if (typeof this.commands[command] === 'function') {
       this.commands[command](...args);
     }
     else {
-      console.log(chalk.red(`> '${command}' is not a valid command`));
+      console.error(chalk.red(`> '${command}' is not a valid command`));
     }
   }
 }

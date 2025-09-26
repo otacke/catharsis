@@ -197,7 +197,7 @@ export default class Manifest {
       writeFileSync(this.filePath, JSON.stringify(this.data, null, JSON_INDENTATION));
     }
     catch (error) {
-      console.log(chalk.red(
+      console.error(chalk.red(
         'Error: Unable to write to manifest.json. Please check permissions on the assets directory.'
       ));
     }

@@ -18,7 +18,7 @@ export const updateServedData = async (uberNamesToUpdate) => {
   const config = loadConfig();
 
   if (existsSync(config.updateLockFile)) {
-    console.log(chalk.red('Update of server data already in progress. Skipping!'));
+    console.error(chalk.red('Update of server data already in progress. Skipping!'));
     return;
   }
 

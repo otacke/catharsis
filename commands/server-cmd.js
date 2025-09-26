@@ -106,7 +106,7 @@ export default class ServerCmd {
       setTimeout(() => {
         try {
           process.kill(pid, 0);
-          console.log(chalk.red('Server did not stop gracefully. Force killing...'));
+          console.error(chalk.red('Server did not stop gracefully. Force killing...'));
           process.kill(pid, 'SIGKILL');
         }
         catch (error) {

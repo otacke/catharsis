@@ -44,7 +44,7 @@ export default class LibrariesCmd {
     const importer = new Importer();
     const importWasSuccessful = await importer.import(zipFileName);
     if (!importWasSuccessful) {
-      console.log(chalk.red('Import failed'));
+      console.error(chalk.red('Import failed'));
       return;
     }
 
@@ -75,11 +75,11 @@ export default class LibrariesCmd {
     if (relevantFolders.length > 1) {
       const listString = `${list.map((item) => `- ${item}`).join('\n')}`;
 
-      console.log(chalk.red(
+      console.error(chalk.red(
         `There are multiple library folders for ${machineName}:`
       ));
-      console.log(chalk.red(listString));
-      console.log(chalk.red('Please specify the major.minor version to remove.'));
+      console.error(chalk.red(listString));
+      console.error(chalk.red('Please specify the major.minor version to remove.'));
       return;
     }
     else if (relevantFolders.length === 0) {
@@ -88,7 +88,7 @@ export default class LibrariesCmd {
         message.push(`Did you mean H5P.${uberName}?`);
       }
 
-      console.log(chalk.red(message.join(' ')));
+      console.error(chalk.red(message.join(' ')));
       return;
     }
 

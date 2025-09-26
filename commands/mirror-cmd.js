@@ -33,7 +33,7 @@ export default class MirrorCmd {
     this.libraries.update();
 
     if (!isURL(url)) {
-      console.log(chalk.red('Invalid URL for mirroring'));
+      console.error(chalk.red('Invalid URL for mirroring'));
       return [];
     }
 
@@ -66,7 +66,7 @@ export default class MirrorCmd {
   async fetchContentTypes(url, referToOrigin) {
     let contentTypes = await fetchContentTypeCache(url);
     if (typeof contentTypes === 'string') {
-      console.log(chalk.red(contentTypes));
+      console.error(chalk.red(contentTypes));
       return null;
     }
 
@@ -131,7 +131,7 @@ export default class MirrorCmd {
 
     const blob = await fetchH5PContentType(contentTypeURL);
     if (typeof blob === 'string') {
-      console.log(chalk.red(blob));
+      console.error(chalk.red(blob));
       return false;
     }
 

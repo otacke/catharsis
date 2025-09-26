@@ -70,7 +70,7 @@ export default class AssetFiles {
     try {
       const response = await fetch(url);
       if (!response.ok) {
-        console.log(chalk.red('Error: Unable to fetch file from URL'));
+        console.error(chalk.red('Error: Unable to fetch file from URL'));
         return;
       }
 
@@ -90,7 +90,7 @@ export default class AssetFiles {
       return fileURL;
     }
     catch (error) {
-      console.log(chalk.red('Error: Unable to add file from URL', error));
+      console.error(chalk.red('Error: Unable to add file from URL', error));
       return;
     }
   }

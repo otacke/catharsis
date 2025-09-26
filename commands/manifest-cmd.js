@@ -26,7 +26,7 @@ export default class ManifestCmd {
       const errorMessage = path ?
         `No manifest entry found for ${machineName} at path ${path}.` :
         `No manifest entry found for ${machineName}.`;
-      console.log(chalk.red(errorMessage));
+      console.error(chalk.red(errorMessage));
       return;
     }
 

@@ -44,7 +44,7 @@ export default class Exporter {
       .forEach((dependencyUberName) => {
         const sourceFolder = libraries.getFolderPath(dependencyUberName);
         if (!sourceFolder) {
-          console.log(chalk.red(`Library source folder not found for ${dependencyUberName}`));
+          console.error(chalk.red(`Library source folder not found for ${dependencyUberName}`));
         }
 
         const destinationFolder = path.join(tempExportPath, path.basename(sourceFolder));

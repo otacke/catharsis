@@ -75,7 +75,7 @@ const displayMessages = (messages = [], options = {}) => {
       console.log(chalk.yellow(`- ${text}`));
     }
     else {
-      console.log(chalk.red(`- ${text}`));
+      console.error(chalk.red(`- ${text}`));
     }
   });
 };
