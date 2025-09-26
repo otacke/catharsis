@@ -414,6 +414,13 @@ An entry will look like this (the order of properties may vary):
     "categories": [
       "Other"
     ],
+    "origin": "https://api.h5p.org/v1/content-types",
+    "referToOrigin": false,
+    "version": {
+      "major": 1,
+      "minor": 2,
+      "patch": 3
+    }
     "summary": "",
     "description": "",
     "example": "",
@@ -478,6 +485,15 @@ Example: `"tutorial": "https://h5p.org/documentation/content-author-guide/tutori
 The `keywords` property can hold multiple keywords that are supposed to help the author find the content type when using the search field in the H5P Hub client.
 
 Example: `"keywords": ["foo", "bar", "batz"],`
+
+#### origin
+The `origin` property can hold the URL to the content types endpoint on another H5P Content Type Hub Server.
+
+#### referToOrigin
+If `referToOrigin` is set to `true` and and `origin` is set, the server will relay the request for a content type library to the original server instead of providing the file. Note that it will be set (or should be) to false if you are serving the same library but in a newer version.
+
+#### version
+The `version` property object holds the `major`, `minor` and `patch` version number of the library.
 
 ## Future development
 Catharsis is not done yet - what piece of software ever is? There are tasks left to do, there are new features that could make sense. See [issues on github](https://github.com/otacke/catharsis/issues)
