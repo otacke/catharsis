@@ -97,23 +97,21 @@ export default class MirrorCmd {
       })
       .sort((a, b) => compareVersions(a, b));
 
-    let remoteVersionIsNewer = localVersions.length === 0;
-    for (const localVersion of localVersions) {
-      const versionComparison = compareVersions(remoteVersion, localVersion);
-      if (versionComparison <= 0) {
-        // Remote version is older
-        break;
-      }
-
-      remoteVersionIsNewer = true;
+    const remoteVersionIsOlder = localVersions.some((localVersion) => compareVersions(remoteVersion, localVersion) < 0);
+    if (remoteVersionIsOlder) {
+      const manifestEntry = this.manifest.getEntry(item.id);
+      manifestEntry.referToOrigin = false;
+      this.manifest.updateEntry(manifestEntry);
     }
 
+    const remoteVersionIsNewer = localVersions.length === 0 ||
+      localVersions.every((localVersion) => compareVersions(remoteVersion, localVersion) > 0);
     if (!remoteVersionIsNewer) {
       await this.updateLocalMetadata(item);
       return;
     }
-    const importWasSuccessful = await this.importContentType(item.id, url);
 
+    const importWasSuccessful = await this.importContentType(item.id, url);
     if (importWasSuccessful) {
       await this.updateLocalMetadata(item);
       return `${item.id} ${remoteVersion}`;
