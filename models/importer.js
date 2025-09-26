@@ -7,7 +7,7 @@ import AdmZip from 'adm-zip';
 
 import { removeDirectorySync } from '../services/fs-utils.js';
 import { getLibraryFolderNames, readLibraryJson } from '../services/h5p-utils.js';
-import { compareVersions, createUUID, isNewerPatchVersion } from '../services/utils.js';
+import { compareVersions, isNewerPatchVersion } from '../services/utils.js';
 
 /**
  * Create identity mapping for a library including machine name, folder name and version.
