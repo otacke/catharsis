@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import chalk from 'chalk';
 
 import { decomposeUberName } from '../services/h5p-utils.js';
-import { loadConfig } from '../services/utils.js';
+import { compareVersions, loadConfig } from '../services/utils.js';
 
 /** @constant {number} JSON_INDENTATION Intentation for json file. */
 const JSON_INDENTATION = 2;
@@ -18,6 +18,7 @@ const JSON_INDENTATION = 2;
 const WANTED_MANIFEST_PROPERTIES = [
   'id',
   'title',
+  'version',
   'summary',
   'description',
   'icon',
@@ -313,6 +314,16 @@ export default class Manifest {
 
     const entryIndex = this.data.contentTypes.findIndex((entry) => entry.id === newData.id);
     if (entryIndex !== -1) {
+      const oldData = this.data.contentTypes[entryIndex];
+      if (newData.version && oldData.version) {
+        const newVersionString = `${newData.version.major}.${newData.version.minor}.${newData.version.patch || 0}`;
+        const oldVersionString = `${oldData.version.major}.${oldData.version.minor}.${oldData.version.patch || 0}`;
+
+        if (compareVersions(newVersionString, oldVersionString) > 0) {
+          newData.referToOrigin = false;
+        }
+      }
+
       Object.keys(newData).forEach((key) => {
         if (newData[key] === '' || newData[key] === null || newData[key] === undefined) {
           delete newData[key];
@@ -348,12 +359,12 @@ export default class Manifest {
         return contentType;
       }
 
-      /*
-       * Not storing data that can be derived from library.json, e.g. version numbers.
-       * Those are put into the hub registry later.
-       */
       contentType.title = (contentType.title || libraryJson.title) ?? '';
-
+      contentType.version = {
+        major: libraryJson.majorVersion,
+        minor: libraryJson.minorVersion,
+        patch: libraryJson.patchVersion
+      };
       const fileDate = libraries.getFileDate(contentType.id);
       contentType.createdAt = contentType.createdAt || fileDate;
       contentType.updatedAt = fileDate;
