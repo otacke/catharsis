@@ -128,8 +128,6 @@ export default class Importer {
 
     try {
       const tempFolderPath = createTempFolder(this.tempPath);
-      const tmpImportDir = createUUID();
-      const tmpImportPath = path.join(tempFolderPath, tmpImportDir);
 
       let zipFilePath;
       if (typeof input === 'string') {
@@ -137,22 +135,22 @@ export default class Importer {
 
       }
       else {
-        zipFilePath = path.join(tmpImportPath, 'temp.zip');
+        zipFilePath = path.join(tempFolderPath, 'temp.zip');
         await writeBlobToFile(input, zipFilePath);
       }
 
-      extractZip(zipFilePath, tmpImportPath);
+      extractZip(zipFilePath, tempFolderPath);
 
       if (typeof input !== 'string') {
         unlinkSync(zipFilePath);
       }
 
-      const newIdentityMapping = getIdentityMapping(tmpImportPath);
+      const newIdentityMapping = getIdentityMapping(tempFolderPath);
       const localIdentityMapping = getIdentityMapping(this.librariesPath);
 
-      updateLibraries(tmpImportPath, this.librariesPath, newIdentityMapping, localIdentityMapping);
+      updateLibraries(tempFolderPath, this.librariesPath, newIdentityMapping, localIdentityMapping);
 
-      removeDirectorySync(tmpImportPath);
+      removeDirectorySync(tempFolderPath);
       return true;
     }
     catch (error) {
