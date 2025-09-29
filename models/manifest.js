@@ -34,7 +34,7 @@ const WANTED_MANIFEST_PROPERTIES = [
   'keywords',
   'categories',
   'referToOrigin',
-  'origin'
+  'origin',
 ];
 
 /**
@@ -129,7 +129,7 @@ const setLicenseAttributes = (licenseId) => {
       sublicensable: true,
       canHoldLiable: false,
       mustIncludeCopyright: true,
-      mustIncludeLicense: true
+      mustIncludeLicense: true,
     };
   }
   else if (licenseId === 'U') {
@@ -199,7 +199,7 @@ export default class Manifest {
     }
     catch (error) {
       console.error(chalk.red(
-        'Error: Unable to write to manifest.json. Please check permissions on the assets directory.'
+        'Error: Unable to write to manifest.json. Please check permissions on the assets directory.',
       ));
     }
   }
@@ -212,7 +212,7 @@ export default class Manifest {
     const machineNamesInManifest = this.data.contentTypes.map((contentType) => contentType.id);
 
     this.data.contentTypes = this.data.contentTypes.filter((contentType) =>
-      machineNamesOfContentTypes.includes(contentType.id)
+      machineNamesOfContentTypes.includes(contentType.id),
     );
 
     machineNamesOfContentTypes.forEach((machineName) => {
@@ -242,7 +242,7 @@ export default class Manifest {
    * Find a property in a JSON object by path.
    * @param {string} path The path to the property, e.g. 'title', 'screenshots[0].url'.
    * @param {object} json The JSON object to search in.
-   * @returns {*} The value of the property if found, null otherwise.
+   * @returns {undefined|null|number|string|boolean} The value of the property if found, null otherwise.
    */
   findProperty(path, json) {
     if (typeof path !== 'string' || typeof json !== 'object' || json === null) {
@@ -363,7 +363,7 @@ export default class Manifest {
       contentType.version = {
         major: libraryJson.majorVersion,
         minor: libraryJson.minorVersion,
-        patch: libraryJson.patchVersion
+        patch: libraryJson.patchVersion,
       };
       const fileDate = libraries.getFileDate(contentType.id);
       contentType.createdAt = contentType.createdAt || fileDate;

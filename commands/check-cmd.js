@@ -6,7 +6,7 @@ import Ajv from 'ajv';
 import chalk from 'chalk';
 
 import Libraries from '../models/libraries.js';
-import { decomposeLibraryFileName, decomposeUberName,  } from '../services/h5p-utils.js';
+import { decomposeLibraryFileName, decomposeUberName  } from '../services/h5p-utils.js';
 import { compareLanguages, removeUntranslatables } from '../services/translation-utils.js';
 import { compareVersions } from '../services/utils.js';
 
@@ -30,7 +30,7 @@ const getSegmentByPath = (jsonData, path) => {
 
   return {
     key: propertyName,
-    value: processedValue
+    value: processedValue,
   };
 };
 
@@ -152,7 +152,7 @@ export default class CheckCmd {
         messages.push({
           uberName: uberName,
           text: `Preloaded ${fileTypeLabel} file not found: "${file.path}"`,
-          level: 'error'
+          level: 'error',
         });
       }
     });
@@ -175,7 +175,7 @@ export default class CheckCmd {
       messages.push({
         uberName,
         text: 'File "library.json" not found',
-        level: 'error'
+        level: 'error',
       });
 
       return messages;
@@ -189,7 +189,7 @@ export default class CheckCmd {
       messages.push({
         uberName,
         text: `File "library.json" is invalid: ${error.message}`,
-        level: 'error'
+        level: 'error',
       });
 
       return messages;
@@ -209,21 +209,21 @@ export default class CheckCmd {
           messages.push({
             uberName,
             text: `In file "library.json", property "${error.params.additionalProperty}" is not allowed`,
-            level: 'warning'
+            level: 'warning',
           });
         }
         else if (error.keyword === 'required') {
           messages.push({
             uberName,
             text: `File "library.json" ${error.message}`,
-            level: 'warning'
+            level: 'warning',
           });
         }
         else {
           messages.push({
             uberName,
             text: `In file "library.json", property value of "${error.instancePath}" ${error.message}`,
-            level: 'warning'
+            level: 'warning',
           });
         }
       });
@@ -253,7 +253,7 @@ export default class CheckCmd {
         messages.push({
           uberName,
           text: 'File "semantics.json" not found',
-          level: 'error'
+          level: 'error',
         });
 
         return messages;
@@ -269,7 +269,7 @@ export default class CheckCmd {
         messages.push({
           uberName,
           text: `File "semantics.json" is invalid: ${error.message}`,
-          level: 'error'
+          level: 'error',
         });
 
         return messages;
@@ -292,7 +292,7 @@ export default class CheckCmd {
         const { key, value } = getSegmentByPath(semanticsJson, error.instancePath);
         const parts = [
           `In file "semantics.json", property value of field "${key}" ("${error.instancePath}") ${error.message}`,
-          `The problematic value is: ${JSON.stringify(value)}.`
+          `The problematic value is: ${JSON.stringify(value)}.`,
         ];
 
         if (error.keyword === 'additionalProperties') {
@@ -302,7 +302,7 @@ export default class CheckCmd {
         messages.push({
           uberName,
           text: parts.join(' '),
-          level: 'warning'
+          level: 'warning',
         });
       });
     }
@@ -325,7 +325,7 @@ export default class CheckCmd {
       messages.push({
         uberName,
         text: 'File "icon.svg" is missing',
-        level: 'warning'
+        level: 'warning',
       });
     }
     else {
@@ -334,7 +334,7 @@ export default class CheckCmd {
         messages.push({
           uberName,
           text: 'File "icon.svg" is not a valid SVG file',
-          level: 'warning'
+          level: 'warning',
         });
       }
     }
@@ -367,14 +367,14 @@ export default class CheckCmd {
       messages.push({
         uberName,
         text: 'In "language" folder, template file ".en.json" should not exist',
-        level: 'error'
+        level: 'error',
       });
     }
     else if (isEditorLibrary && !translationFiles.includes('en.json')) {
       messages.push({
         uberName,
         text: 'In "language" folder, template file "en.json" should be added.',
-        level: 'warning'
+        level: 'warning',
       });
     }
 
@@ -383,7 +383,7 @@ export default class CheckCmd {
         messages.push({
           uberName,
           text: `In "language" folder, "${file}" is not a JSON file`,
-          level: 'error'
+          level: 'error',
         });
       }
 
@@ -392,14 +392,14 @@ export default class CheckCmd {
         messages.push({
           uberName,
           text: 'In "language" folder, template file "en.json" must be renamed to `.en.json`',
-          level: 'error'
+          level: 'error',
         });
       }
       else if (isEditorLibrary && languageCode === '.en') {
         messages.push({
           uberName,
           text: 'In "language" folder, template file ".en.json" must be renamed to `en.json`',
-          level: 'error'
+          level: 'error',
         });
       }
 
@@ -407,7 +407,7 @@ export default class CheckCmd {
         messages.push({
           uberName,
           text: `In "language" folder, "${file}" must not start with a dot`,
-          level: 'error'
+          level: 'error',
         });
       }
 
@@ -415,7 +415,7 @@ export default class CheckCmd {
         messages.push({
           uberName,
           text: `In "language" folder, "${file}" must be in lowercase`,
-          level: 'error'
+          level: 'error',
         });
       }
 
@@ -427,7 +427,7 @@ export default class CheckCmd {
         messages.push({
           uberName,
           text: `Translation file "${file}" is invalid: ${error.message}`,
-          level: 'error'
+          level: 'error',
         });
 
         return messages;
@@ -444,7 +444,7 @@ export default class CheckCmd {
           messages.push({
             uberName,
             text: `Could not check translation file "${file}", because template file "en.json" is invalid or missing.`,
-            level: 'warning'
+            level: 'warning',
           });
           return messages;
         }
@@ -455,7 +455,7 @@ export default class CheckCmd {
           messages.push({
             uberName,
             text: `Translation file "${file}" seems to be invalid.`,
-            level: 'error'
+            level: 'error',
           });
           return messages;
         }
@@ -464,7 +464,7 @@ export default class CheckCmd {
           messages.push({
             uberName,
             text: `Could not check translation file "${file}", because template file ".en.json" is invalid or missing.`,
-            level: 'warning'
+            level: 'warning',
           });
           return messages;
         }
@@ -482,7 +482,7 @@ export default class CheckCmd {
         messages.push({
           uberName,
           text: `Translation file "${file}" is invalid: ${combinedErrors.join(', ')}`,
-          level: 'error'
+          level: 'error',
         });
       }
     });
@@ -520,7 +520,7 @@ export default class CheckCmd {
             `Has a mandatory dependency to "${dependency}, but it is not installed.`,
             'The dependency must be installed in order to use the library.',
           ].join(' '),
-          level: 'error'
+          level: 'error',
         });
       }
     });
@@ -535,7 +535,7 @@ export default class CheckCmd {
             `Has an optional dependency to "${dependency}", but it is not installed.`,
             'Would be nice to install the dependency, to give the users the full experience.',
           ].join(' '),
-          level: 'warning'
+          level: 'warning',
         });
       }
     });
@@ -565,9 +565,9 @@ export default class CheckCmd {
           text: [
             `Has a dependency to "${dependency}" with version ${usedVersion},`,
             `but version ${latestMinorVersion} is already available.`,
-            'Should be updated to prevent copy&paste limitations.'
+            'Should be updated to prevent copy&paste limitations.',
           ].join(' '),
-          level: 'warning'
+          level: 'warning',
         });
       }
     });
@@ -610,9 +610,9 @@ export default class CheckCmd {
         text: [
           'There are conflicting dependencies throughout the dependency tree:',
           `"${machineName}" is required in multiple versions ${versions.join(', ')}.`,
-          'Should be harmonized, or in some cases, this can cause content to crash.'
+          'Should be harmonized, or in some cases, this can cause content to crash.',
         ].join(' '),
-        level: 'warning'
+        level: 'warning',
       };
     });
   }

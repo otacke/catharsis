@@ -59,7 +59,7 @@ export default class Exporter {
 
     const zipFilePath = path.join(
       this.exportsPath,
-      `${machineName}-${library.majorVersion}.${library.minorVersion}.${library.patchVersion}.h5p`
+      `${machineName}-${library.majorVersion}.${library.minorVersion}.${library.patchVersion}.h5p`,
     );
     await this.zipFolder(tempExportPath, zipFilePath);
 
@@ -116,7 +116,7 @@ export default class Exporter {
    */
   getLibraryDependencies(dependencies = []) {
     return dependencies.map(
-      (dependency) => `${dependency.machineName} ${dependency.majorVersion}.${dependency.minorVersion}`
+      (dependency) => `${dependency.machineName} ${dependency.majorVersion}.${dependency.minorVersion}`,
     );
   }
 

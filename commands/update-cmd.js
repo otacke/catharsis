@@ -85,7 +85,7 @@ const updateExports = async (uberNamesToUpdate = []) => {
     manifest.getMachineNames();
 
   await Promise.all(
-    machineNames.map((machineName) => exporter.createExport(machineName, libraries))
+    machineNames.map((machineName) => exporter.createExport(machineName, libraries)),
   );
 
   console.log(chalk.blue('Done updating export files'));

@@ -173,7 +173,7 @@ export default class MirrorCmd {
     }
 
     item.screenshots = await Promise.all(
-      item.screenshots.map((screenshot, index) => this.updateScreenshotURL(screenshot, item.id, index))
+      item.screenshots.map((screenshot, index) => this.updateScreenshotURL(screenshot, item.id, index)),
     );
   }
 

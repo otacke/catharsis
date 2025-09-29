@@ -56,7 +56,7 @@ export const clearDirectorySync = (dirPath) => {
       recursive: true,
       force: true,
       maxRetries: 3,
-      retryDelay: 100
+      retryDelay: 100,
     });
 
     // Recreate the empty directory

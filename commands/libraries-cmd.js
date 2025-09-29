@@ -76,7 +76,7 @@ export default class LibrariesCmd {
       const listString = `${list.map((item) => `- ${item}`).join('\n')}`;
 
       console.error(chalk.red(
-        `There are multiple library folders for ${machineName}:`
+        `There are multiple library folders for ${machineName}:`,
       ));
       console.error(chalk.red(listString));
       console.error(chalk.red('Please specify the major.minor version to remove.'));

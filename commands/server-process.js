@@ -218,7 +218,7 @@ class H5PServer {
       this.config.listen ?? this.config.hostname ?? getLocalIPAddress(),
       () => {
         writeFileSync(this.config.pidFile, process.pid.toString());
-      }
+      },
     );
   }
 }

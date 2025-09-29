@@ -4,7 +4,7 @@ export default [
   eslintConfigSnordianH5P.configs['flat/recommended'],
   {
     rules: {
-      'no-console': 'off'
-    }
-  }
+      'no-console': 'off',
+    },
+  },
 ];

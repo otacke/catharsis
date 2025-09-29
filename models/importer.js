@@ -99,7 +99,7 @@ const updateLibraries = (tempFolderPath, librariesPath, newIdentityMapping, loca
 
     renameSync(
       path.join(tempFolderPath, newIdentity.folderName),
-      path.join(librariesPath, newIdentity.folderName)
+      path.join(librariesPath, newIdentity.folderName),
     );
   });
 };

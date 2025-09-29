@@ -43,7 +43,7 @@ export default class ServerCmd {
     const spawnOptions = {
       cwd: path.join(dirname, '..'),
       stdio: this.config.detached ? 'ignore' : 'inherit',
-      detached: this.config.detached
+      detached: this.config.detached,
     };
 
     const child = spawn('node', [serverScript], spawnOptions);
@@ -73,8 +73,8 @@ export default class ServerCmd {
     console.log(chalk.blue(
       [
         'H5P Content Type Hub Server is running on',
-        `http://${this.config.domain ?? this.config.hostname}:${this.config.port} with PID ${process.pid}`
-      ].join(' ')
+        `http://${this.config.domain ?? this.config.hostname}:${this.config.port} with PID ${process.pid}`,
+      ].join(' '),
     ));
 
     if (runDetached) {

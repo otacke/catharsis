@@ -64,7 +64,7 @@ export default class HubRegistry {
     }
     catch (error) {
       console.error(chalk.red(
-        'Error: Unable to write to hub-registry.json. Please check permissions on the assets directory.'
+        'Error: Unable to write to hub-registry.json. Please check permissions on the assets directory.',
       ));
     }
   }

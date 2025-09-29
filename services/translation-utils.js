@@ -24,7 +24,7 @@ export const isProbablyLanguageCode = (code) => {
 export const compareLanguages = (candidate, template, errors = [], path = '') => {
   if (Object.keys(candidate).length !== Object.keys(template).length) {
     return {
-      errors: [...errors, { path: path || '/', text: 'Not the same number of fields' }]
+      errors: [...errors, { path: path || '/', text: 'Not the same number of fields' }],
     };
   }
 
@@ -37,7 +37,7 @@ export const compareLanguages = (candidate, template, errors = [], path = '') =>
       if (!isString) {
         errors.push({
           path: currentPath,
-          text: `Mismatch for "${property}": Should be a string`
+          text: `Mismatch for "${property}": Should be a string`,
         });
         continue;
       }
@@ -45,7 +45,7 @@ export const compareLanguages = (candidate, template, errors = [], path = '') =>
       if (candidate[property].trim().length === 0) {
         errors.push({
           path: currentPath,
-          text: `Empty value for "${property}"`
+          text: `Empty value for "${property}"`,
         });
         continue;
       }
@@ -54,7 +54,7 @@ export const compareLanguages = (candidate, template, errors = [], path = '') =>
       if (!isSafe) {
         errors.push({
           path: currentPath,
-          text: `Unsafe translation for "${property}": ${candidate[property]}`
+          text: `Unsafe translation for "${property}": ${candidate[property]}`,
         });
       }
     }
@@ -63,7 +63,7 @@ export const compareLanguages = (candidate, template, errors = [], path = '') =>
       if (!candidate[property]) {
         errors.push({
           path: currentPath,
-          text: `Missing translation for "${property}"`
+          text: `Missing translation for "${property}"`,
         });
         continue;
       }
@@ -73,8 +73,8 @@ export const compareLanguages = (candidate, template, errors = [], path = '') =>
           path: currentPath,
           text: [
             `Mismatch for "${property}": Different length between `,
-            `${JSON.stringify(candidate[property])} VS ${JSON.stringify(template[property])}`
-          ].join(' ')
+            `${JSON.stringify(candidate[property])} VS ${JSON.stringify(template[property])}`,
+          ].join(' '),
         });
         continue;
       }
@@ -93,8 +93,8 @@ export const isStringSafe = (translationString) => {
       },
       allowedAttributes: {
         th: ['scope'],
-        a: ['target', 'href']
-      }
+        a: ['target', 'href'],
+      },
     });
 
   return translationString === sanitizedString;
@@ -140,7 +140,7 @@ export const removeUntranslatables = (field, name, parentName) => {
     // Remove unnecessary nested 'field' structures with only empty objects
     if (Array.isArray(newField.fields)) {
       const allEmpty = newField.fields.every(
-        (subField) => typeof subField === 'object' && Object.keys(subField).length === 0
+        (subField) => typeof subField === 'object' && Object.keys(subField).length === 0,
       );
       if (allEmpty && Object.keys(newField).length !== 1) {
         delete newField.fields;
@@ -200,7 +200,7 @@ export const isFieldTranslatable = (property, value) => {
       /^rgb(a)?\([\d\s,\.\/%]+\)$/,
       /^hsl(a)?\([\d\s,\.\/%]+\)$/,
       /^hsv?[\d\s,\.\/%]*$/,
-      /^hwb\([\w\d\s,\.\/%]+\)$/
+      /^hwb\([\w\d\s,\.\/%]+\)$/,
     ];
     if (colorRegexes.some((re) => re.test(value))) {
       return false;

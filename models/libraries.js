@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 
 import { removeDirectorySync } from '../services/fs-utils.js';
 import {
-  decomposeLibraryFileName, decomposeUberName, findH5PDependenciesInSemantics, getLibraryFolderNames, readLibraryJson
+  decomposeLibraryFileName, decomposeUberName, findH5PDependenciesInSemantics, getLibraryFolderNames, readLibraryJson,
 } from '../services/h5p-utils.js';
 import { compareVersions, loadConfig } from '../services/utils.js';
 
@@ -114,12 +114,12 @@ export default class Libraries {
       }
 
       const preloadedDependencies = (libraryJson?.preloadedDependencies ?? []).map(
-        (dependency) => `${dependency.machineName} ${dependency.majorVersion}.${dependency.minorVersion}`
+        (dependency) => `${dependency.machineName} ${dependency.majorVersion}.${dependency.minorVersion}`,
       );
       dependencies.push(...preloadedDependencies);
 
       const editorDependencies = (libraryJson?.editorDependencies ?? []).map(
-        (dependency) => `${dependency.machineName} ${dependency.majorVersion}.${dependency.minorVersion}`
+        (dependency) => `${dependency.machineName} ${dependency.majorVersion}.${dependency.minorVersion}`,
       );
       dependencies.push(...editorDependencies);
     }
