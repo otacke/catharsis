@@ -11,14 +11,38 @@ export default class HubRegistry {
   /**
    * @class
    * @param {string} registryPath Relative path to hub registry file.
+   * @param {boolean} amend Whether to amend existing data or start fresh.
    */
-  constructor(registryPath = 'assets/hub-registry.json') {
+  constructor(registryPath = 'assets/hub-registry.json', amend = false) {
     const dirname = path.dirname(fileURLToPath(import.meta.url));
     this.filePath = path.join(dirname, '..', ...registryPath.split('/'));
 
-    this.data = {
-      contentTypes: [],
-    };
+    if (amend) {
+      this.data = this.read();
+    }
+    else {
+      this.data = {
+        contentTypes: [],
+      };
+    }
+  }
+
+  /**
+   * Read the hub-registry.json file.
+   * @returns {object} The hub registry data object.
+   */
+  read() {
+    let hubRegistryData;
+    try {
+      hubRegistryData = JSON.parse(readFileSync(this.filePath, 'utf8'));
+    }
+    catch (error) {
+      hubRegistryData = { contentTypes: [] };
+    }
+
+    // TODO: Would be nice to validate the data here.
+
+    return hubRegistryData;
   }
 
   /**

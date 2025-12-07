@@ -45,7 +45,7 @@ const updateHubRegistry = (uberNamesToUpdate = []) => {
   const manifest = new Manifest();
   const libraries = new Libraries();
 
-  const hubRegistry = new HubRegistry();
+  const hubRegistry = new HubRegistry(undefined, true); // Amend existing registry
 
   const manifestData = manifest.getData();
 
