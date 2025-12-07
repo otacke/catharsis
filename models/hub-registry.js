@@ -51,7 +51,7 @@ export default class HubRegistry {
    * @param {Libraries} libraries Libraries instance.
    */
   feed(manifestData, libraries) {
-    this.data.contentTypes = manifestData.contentTypes.map((contentType) => {
+    manifestData.contentTypes.forEach((contentType) => {
       const libraryJson = libraries.getLibraryJson(contentType.id);
 
       contentType.version = {
@@ -75,7 +75,13 @@ export default class HubRegistry {
       delete contentType.referToOrigin;
       delete contentType.origin;
 
-      return contentType;
+      const existingIndex = this.data.contentTypes.findIndex((ct) => ct.id === contentType.id);
+      if (existingIndex !== -1) {
+        this.data.contentTypes[existingIndex] = contentType;
+      }
+      else {
+        this.data.contentTypes.push(contentType);
+      }
     });
   }
 
