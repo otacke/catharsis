@@ -37,7 +37,8 @@ export default class HubRegistry {
       hubRegistryData = JSON.parse(readFileSync(this.filePath, 'utf8'));
     }
     catch (error) {
-      hubRegistryData = { contentTypes: [] };
+      // eslint-disable-next-line @stylistic/js/max-len
+      throw new Error(`Error: Unable to read Hub Registry at ${this.filePath} (${error.message}). Please ensure the file exists and is valid JSON.`);
     }
 
     // TODO: Would be nice to validate the data here.
