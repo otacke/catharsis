@@ -1,10 +1,28 @@
-import { readFileSync, writeFileSync } from 'fs';
+import { chmodSync, readFileSync, writeFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 import chalk from 'chalk';
 
 import Libraries from './libraries.js';
+
+/** @constant {number} REGISTRY_FILE_PERMISSIONS File permissions for registry files. */
+const REGISTRY_FILE_PERMISSIONS = 0o644; // rw-r--r--
+
+/**
+ * Validate that a registry path is within allowed directories.
+ * @param {string} filePath The resolved file path to validate.
+ * @param {string} allowedDirectory The allowed base directory.
+ * @throws {Error} If path traversal is detected.
+ */
+const validateRegistryPath = (filePath, allowedDirectory) => {
+  const resolvedPath = path.resolve(filePath);
+  const resolvedAllowed = path.resolve(allowedDirectory);
+
+  if (!resolvedPath.startsWith(resolvedAllowed + path.sep)) {
+    throw new Error('Registry path is outside allowed directory');
+  }
+};
 
 export default class HubRegistry {
 
@@ -15,7 +33,10 @@ export default class HubRegistry {
    */
   constructor(registryPath = 'assets/hub-registry.json', amend = false) {
     const dirname = path.dirname(fileURLToPath(import.meta.url));
+    const baseDir = path.join(dirname, '..');
     this.filePath = path.join(dirname, '..', ...registryPath.split('/'));
+
+    validateRegistryPath(this.filePath, baseDir);
 
     if (amend) {
       this.data = this.read();
@@ -92,6 +113,7 @@ export default class HubRegistry {
   write() {
     try {
       writeFileSync(this.filePath, JSON.stringify(this.data));
+      chmodSync(this.filePath, REGISTRY_FILE_PERMISSIONS);
     }
     catch (error) {
       console.error(chalk.red(

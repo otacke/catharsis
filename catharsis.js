@@ -195,8 +195,15 @@ class H5PContentTypeHub {
     }
 
     if (!existsSync('assets/hub-registry.json')) {
-      const hubRegistry = new HubRegistry();
-      hubRegistry.write();
+      try {
+        const hubRegistry = new HubRegistry();
+        hubRegistry.write();
+      }
+      catch (error) {
+        console.error(chalk.red(
+          `Error: Unable to create hub-registry.json: ${error.message}`,
+        ));
+      }
     }
   }
 
