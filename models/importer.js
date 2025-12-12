@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { existsSync, mkdirSync, renameSync, unlinkSync, writeFileSync } from 'fs';
+import { chmodSync, existsSync, mkdirSync, readdirSync, renameSync, unlinkSync, writeFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -8,6 +8,12 @@ import AdmZip from 'adm-zip';
 import { removeDirectorySync } from '../services/fs-utils.js';
 import { getLibraryFolderNames, readLibraryJson } from '../services/h5p-utils.js';
 import { compareVersions, isNewerPatchVersion } from '../services/utils.js';
+
+/** @constant {number} LIBRARY_FILE_PERMISSIONS File permissions for library files. */
+export const LIBRARY_FILE_PERMISSIONS = 0o644; // rw-r--r--
+
+/** @constant {number} LIBRARY_DIRECTORY_PERMISSIONS File permissions for library directories. */
+export const LIBRARY_DIRECTORY_PERMISSIONS = 0o755; // rwxr-xr-x
 
 /**
  * Create identity mapping for a library including machine name, folder name and version.
@@ -63,6 +69,26 @@ const writeBlobToFile = async (blob, filePath) => {
 const extractZip = (zipFilePath, extractTo) => {
   const zip = new AdmZip(zipFilePath);
   zip.extractAllTo(extractTo, true);
+
+  setPermissions(extractTo);
+};
+
+/**
+ * Recursively set permissions for files and directories.
+ * @param {string} itemPath Item path to set permissions for.
+ */
+const setPermissions = (itemPath) => {
+  const stats = lstatSync(itemPath);
+  if (stats.isDirectory()) {
+    chmodSync(itemPath, LIBRARY_DIRECTORY_PERMISSIONS);
+    const items = readdirSync(itemPath);
+    items.forEach((item) => {
+      setPermissions(path.join(itemPath, item));
+    });
+  }
+  else {
+    chmodSync(itemPath, LIBRARY_FILE_PERMISSIONS);
+  }
 };
 
 /**

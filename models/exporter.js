@@ -1,4 +1,4 @@
-import { cpSync, lstatSync, readdirSync, unlinkSync } from 'fs';
+import { chmodSync, cpSync, lstatSync, readdirSync, unlinkSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -9,6 +9,9 @@ import { clearDirectorySync } from '../services/fs-utils.js';
 import { decomposeUberName, findH5PDependenciesInSemantics } from '../services/h5p-utils.js';
 import { createUUID } from '../services/utils.js';
 import Libraries from './libraries.js';
+
+/** @constant {number} EXPORT_FILE_PERMISSIONS File permissions for exported files. */
+export const EXPORT_FILE_PERMISSIONS = 0o644; // rw-r--r--
 
 export default class Exporter {
 
@@ -177,6 +180,7 @@ export default class Exporter {
         const zip = new AdmZip();
         this.addFolderToZip(folderPath, zip, folderPath);
         zip.writeZip(zipFilePath);
+        chmodSync(zipFilePath, EXPORT_FILE_PERMISSIONS);
         resolve();
       }
       catch (err) {
