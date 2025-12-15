@@ -3,6 +3,33 @@ import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+/** @constant {string} DEFAULT_PROTOCOL Default protocol for the server. */
+const DEFAULT_PROTOCOL = 'https';
+
+/** @constant {string} DEFAULT_HOSTNAME Default hostname for the server. */
+const DEFAULT_HOSTNAME = 'localhost';
+
+/** @constant {number} DEFAULT_PORT Default port for the server. */
+const DEFAULT_PORT = 8080;
+
+/** @constant {string} DEFAULT_PID_FILE Default PID file path. */
+const DEFAULT_PID_FILE = '.server.pid';
+
+/** @constant {string} DEFAULT_UPDATE_LOCK_FILE Default update lock file path. */
+const DEFAULT_UPDATE_LOCK_FILE = '.update.lock';
+
+/** @constant {boolean} DEFAULT_DETACHED Default detached mode for the server. */
+const DEFAULT_DETACHED = false;
+
+/** @constant {Array} DEFAULT_MIRRORS Default mirrors configuration. */
+const DEFAULT_MIRRORS = [];
+
+/** @constant {number} DEFAULT_RATE_LIMIT_WINDOW_MS Default rate limit window in milliseconds. */
+const DEFAULT_RATE_LIMIT_WINDOW_MS = 3600000; // 1 hour
+
+/** @constant {number} DEFAULT_RATE_LIMIT_MAX_REQUESTS Default max requests per rate limit window. */
+const DEFAULT_RATE_LIMIT_MAX_REQUESTS = 250;
+
 /**
  * Create a UUID.
  * @returns {string} The generated UUID.
@@ -95,15 +122,20 @@ export const getLocalIPAddress = () => {
  * @param {string} [configFileName] Name of the config file
  * @returns {object} Configuration object with defaults applied
  */
-export const loadConfig = (defaults = {
-  protocol: 'https',
-  hostname: 'localhost',
-  port: 8080,
-  pidFile: '.server.pid',
-  updateLockFile: '.update.lock',
-  detached: false,
-  mirrors: [],
-}, configFileName = '.catharsis-config.json') => {
+export const loadConfig = (
+  defaults = {
+    protocol: DEFAULT_PROTOCOL,
+    hostname: DEFAULT_HOSTNAME,
+    port: DEFAULT_PORT,
+    pidFile: DEFAULT_PID_FILE,
+    updateLockFile: DEFAULT_UPDATE_LOCK_FILE,
+    detached: DEFAULT_DETACHED,
+    mirrors: DEFAULT_MIRRORS,
+    rateLimitWindowMS: DEFAULT_RATE_LIMIT_WINDOW_MS,
+    rateLimitMaxRequests: DEFAULT_RATE_LIMIT_MAX_REQUESTS,
+  },
+  configFileName = '.catharsis-config.json',
+) => {
   const currentFilePath = fileURLToPath(import.meta.url);
   const projectRoot = path.resolve(path.dirname(currentFilePath), '..');
 
@@ -161,6 +193,14 @@ export const loadConfig = (defaults = {
         if (mirrorItemsAreOK) {
           config.mirrors = loadedConfig.mirrors;
         }
+      }
+
+      if (typeof loadedConfig.rateLimitWindowMS === 'number') {
+        config.rateLimitWindowMS = loadedConfig.rateLimitWindowMS;
+      }
+
+      if (typeof loadedConfig.rateLimitMaxRequests === 'number') {
+        config.rateLimitMaxRequests = loadedConfig.rateLimitMaxRequests;
       }
 
       Object.entries(loadedConfig).forEach(([key, value]) => {
