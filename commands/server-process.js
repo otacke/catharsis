@@ -12,6 +12,7 @@ import Manifest from '../models/manifest.js';
 import MirrorCmd from './mirror-cmd.js';
 import UpdateCmd, { updateServedData } from './update-cmd.js';
 import { cleanUpTempFiles } from '../services/fs-utils.js';
+import { isValidLibraryFileName, isValidMachineName } from '../services/h5p-utils.js';
 import { getLocalIPAddress, isValidUUID, loadConfig } from '../services/utils.js';
 
 /** @constant {number} HTTP_ERROR_BAD_REQUEST Error code for bad request. */
@@ -148,6 +149,10 @@ class H5PServer {
    * @returns {object|undefined} JSON response.
    */
   handleGetContentType(req, res) {
+    if (!req.params?.machineName || !isValidMachineName(req.params.machineName)) {
+      return res.status(HTTP_ERROR_BAD_REQUEST).json({ error: 'Invalid machine name' });
+    }
+
     const { machineName } = req.params;
     const manifest = new Manifest();
     const entry = manifest.getEntry(machineName);
@@ -158,12 +163,20 @@ class H5PServer {
     const exportsPath = path.join(this.dirname, '..', 'assets', 'exports');
     const exportFiles = readdirSync(exportsPath);
 
-    const exportFile = exportFiles.find((file) => file.startsWith(`${machineName}-`));
+    const exportFile = exportFiles.find((file) => file.startsWith(`${machineName}-`) && isValidLibraryFileName(file));
     if (!exportFile) {
       return res.status(HTTP_ERROR_NOT_FOUND).json({ error: 'Export not found' });
     }
 
-    res.download(path.join(exportsPath, exportFile));
+    const filePath = path.join(exportsPath, exportFile);
+    const resolvedPath = path.resolve(filePath);
+    const resolvedExportsPath = path.resolve(exportsPath);
+
+    if (!resolvedPath.startsWith(`${resolvedExportsPath}${path.sep}`)) {
+      return res.status(HTTP_ERROR_BAD_REQUEST).json({ error: 'Invalid file path' });
+    }
+
+    res.download(resolvedPath);
   }
 
   /**

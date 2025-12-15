@@ -1,6 +1,17 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'fs';
 import path from 'path';
 
+/** @constant {string} MACHINE_NAME_CORE Core pattern for H5P machine names, extracted from H5P core. */
+const MACHINE_NAME_CORE = String.raw`[\w\-\.]{1,255}`;
+
+/** @constant {RegExp} REGEXP_MACHINE_NAME Regular expression for H5P machine names. */
+export const REGEXP_MACHINE_NAME = new RegExp(`^${MACHINE_NAME_CORE}$`, 'i');
+
+/** @constant {RegExp} REGEXP_MACHINE_NAME_STRICT Regular expression for H5P machine names excl. white space. */
+export const REGEXP_MACHINE_NAME_STRICT = new RegExp(`^(?!.*\\s)${MACHINE_NAME_CORE}$`, 'i');
+
+/** @constant {RegExp} REGEXP_LIBRARY_FILE_NAME Regular expression for H5P library file names. */
+export const REGEXP_LIBRARY_FILE_NAME = new RegExp(`^${MACHINE_NAME_CORE}-[0-9]+\\.[0-9]+(?:\\.[0-9]+)?\\.h5p$`, 'i');
 /**
  * Get all library folders from a specified base path.
  * @param {string} basepath The base path where the library folders are located.
@@ -90,4 +101,22 @@ export const findH5PDependenciesInSemantics = (semanticsChunk) => {
 
   search(semanticsChunk);
   return results;
+};
+
+/**
+ * Check whether an H5P machine name is valid.
+ * @param {string} machineName The machine name to validate.
+ * @returns {boolean} True if valid, false otherwise.
+ */
+export const isValidMachineName = (machineName) => {
+  return REGEXP_MACHINE_NAME_STRICT.test(machineName);
+};
+
+/**
+ * Check whether an H5P library file name is valid.
+ * @param {string} fileName The library file name to validate.
+ * @returns {boolean} True if valid, false otherwise.
+ */
+export const isValidLibraryFileName = (fileName) => {
+  return REGEXP_LIBRARY_FILE_NAME.test(fileName);
 };
