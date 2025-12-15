@@ -28,6 +28,12 @@ cd ~/catharsis # assuming that `~/catharsis` is the correct path
 npm install
 ```
 
+For production, you should not leave hints on what's running on your server to nosy people, so you should remove some files if you're not certain those cannot be reached from the outside. Note though that this will make updating a little more inconvenient.
+```
+rm -rf .git
+rm -f package.json package-lock.json
+```
+
 Catharsis is now installed, but you have to configure it, and you will need to make it available to the outside.
 
 #### Setting up a subdomain
@@ -170,7 +176,7 @@ service file named `catharsis.ini` in `~/etc/services.d` with these contents:
 ```
 [program:catharsis]
 directory=~/catharsis
-command=npm run start
+command=node ./catharsis.js server start attached
 autostart=true
 autorestart=true
 environment=NODE_ENV=production
