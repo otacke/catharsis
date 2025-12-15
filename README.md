@@ -46,20 +46,22 @@ If these do not suit your use case, please change those in the [configuration fi
 The one property that you __must__ set in the configuration is `domain`. It's required to set absolute URLs correctly. Please set in in your [configuration file](#changing-the-configuration-file).
 
 ##### Options
-| __Property__            | __Type__ | __Description__                                                                 | __Required__ |
-| ----------------------- | -------- | ------------------------------------------------------------------------------- | ------------ |
-| protocol                | string   | Protocol to use for URLs, _Default: "https"_                                    | optional     |
-| hostname                | string   | Hostname or static IP address, _Default: "localhost"_                           | optional     |
-| domain                  | string   | Domain that hosts catharsis, e.g. `catharsis.your-domain.com`                   | required     |
-| listen                  | string   | IP address that Catharsis needs to listen to - may differ from your server IP!  | optional     |
-| port                    | number   | Port address, _Default: 8080_                                                   | optional     |
-| pidFile                 | string   | Name of file to store the process id when running, _Default: ".server.pid"_     | optional     |
-| updateLockFile          | string   | Name of file to indicate an update is in progress, _Default: ".update.lock"_    | optional     |
-| detached                | boolean  | Default server running mode, _Default: false_                                   | optional     |
-| mirrors                 | object[] | List of endpoints to mirror hub cache from                                      | optional     |
-| mirrors[].url           | string   | URL to endpoint to mirror hub cache from                                        | required     |
-| mirrors[].cron          | string   | schedule for mirroring in [crontab syntax](https://linux.die.net/man/5/crontab) | required     |
-| mirrors[].referToOrigin | boolean  | If `true`, redirect request for content type to original server                 | optional     |
+| __Property__               | __Type__ | __Description__                                                                 | __Required__ |
+| -------------------------- | -------- | ------------------------------------------------------------------------------- | ------------ |
+| protocol                   | string   | Protocol to use for URLs, _Default: "https"_                                    | optional     |
+| hostname                   | string   | Hostname or static IP address, _Default: "localhost"_                           | optional     |
+| domain                     | string   | Domain that hosts catharsis, e.g. `catharsis.your-domain.com`                   | required     |
+| listen                     | string   | IP address that Catharsis needs to listen to - may differ from your server IP!  | optional     |
+| port                       | number   | Port address, _Default: 8080_                                                   | optional     |
+| pidFile                    | string   | Name of file to store the process id when running, _Default: ".server.pid"_     | optional     |
+| updateLockFile             | string   | Name of file to indicate an update is in progress, _Default: ".update.lock"_    | optional     |
+| detached                   | boolean  | Default server running mode, _Default: false_                                   | optional     |
+| mirrors                    | object[] | List of endpoints to mirror hub cache from                                      | optional     |
+| mirrors[].url              | string   | URL to endpoint to mirror hub cache from                                        | required     |
+| mirrors[].cron             | string   | schedule for mirroring in [crontab syntax](https://linux.die.net/man/5/crontab) | required     |
+| mirrors[].referToOrigin    | boolean  | If `true`, redirect request for content type to original server                 | optional     |
+| rateLimitWindowMS          | number   | Time in ms for rate limit window for an IP, _Default: 360000_                   | optional     |
+| rateLimitMaxRequests       | number   | Maximum number of allowed requests per window and per IP. _Default: 250_        | optional     |
 
 ##### Example
 An example that forces Catharsis to listen on the IP address `0.0.0.0`, to use the domain "catharsis.your-domain.com", and to mirror H5P Groups's content types from their H5P Content Type Hub server every six hours, and to redirect requests to the content types to the original server would look like this:
