@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 
 import chalk from 'chalk';
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import multer from 'multer';
 import cron from 'node-cron';
 
@@ -23,6 +24,21 @@ const HTTP_ERROR_NOT_FOUND = 404;
 
 /** @constant {number} SHUTDOWN_TIMEOUT_MS Timeout for forced shutdown. */
 const SHUTDOWN_TIMEOUT_MS = 10000;
+
+/** @constant {number} RATE_LIMIT_WINDOW_MS Rate limit window in milliseconds. */
+const RATE_LIMIT_WINDOW_MS = 900000; // 15 minutes
+
+/** @constant {number} RATE_LIMIT_MAX_REQUESTS Max requests per rate limit window. */
+const RATE_LIMIT_MAX_REQUESTS = 200;
+
+/** @constant {object} RATE_LIMITER Rate limiter middleware. */
+const RATE_LIMITER = rateLimit({
+  windowMs: RATE_LIMIT_WINDOW_MS,
+  max: RATE_LIMIT_MAX_REQUESTS,
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 class H5PServer {
 
@@ -84,6 +100,7 @@ class H5PServer {
     this.app.use('/files', express.static('assets/files'));
 
     this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(RATE_LIMITER);
 
     // Extra error handler, since multer crashes when receiving malformed requests
     this.app.use((err, req, res, next) => {
