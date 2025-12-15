@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import {
-  chmodSync, copyFileSync, existsSync, lstatSync, mkdirSync, readdirSync, renameSync, unlinkSync, writeFileSync
+  chmodSync, copyFileSync, existsSync, lstatSync, mkdirSync, readdirSync, renameSync, unlinkSync, writeFileSync,
 } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';

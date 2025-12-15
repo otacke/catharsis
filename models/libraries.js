@@ -37,6 +37,10 @@ export default class Libraries {
     return getLibraryFolderNames(this.basepath);
   }
 
+  /**
+   * Get the base path to the libraries directory.
+   * @returns {string} Base path to libraries directory.
+   */
   getBasePath() {
     return this.basepath;
   }
@@ -76,6 +80,13 @@ export default class Libraries {
     });
   }
 
+  /**
+   * Compile a complete list of dependencies for a given uber name.
+   * @param {string} uberName Uber name of the library.
+   * @param {string[]} checked List of already checked uber names.
+   * @param {string[]} dependencies Accumulated list of dependencies.
+   * @returns {string[]} Complete list of dependencies.
+   */
   compileTotalDependencyList(uberName, checked = [], dependencies = []) {
     const uberNameForMinorVersion = this.getUbernameForMinorVersion(uberName);
     if (checked.includes(uberNameForMinorVersion)) {
@@ -100,6 +111,12 @@ export default class Libraries {
     return all;
   }
 
+  /**
+   * Get direct dependencies for a given uber name.
+   * @param {string} uberName Uber name of the library.
+   * @param {object} options Options for filtering dependencies.
+   * @returns {string[]} List of direct dependencies.
+   */
   getDependencies(uberName, options = {}) {
     options.type = options.type ?? 'all';
     const dependencies = [];
@@ -135,6 +152,11 @@ export default class Libraries {
     return [...new Set(dependencies)];
   }
 
+  /**
+   * Get the uber name formatted for minor version.
+   * @param {string} uberName Uber name of the library.
+   * @returns {string} Uber name formatted for minor version.
+   */
   getUbernameForMinorVersion(uberName) {
     const { machineName, majorVersion, minorVersion } = decomposeUberName(uberName);
     if (!majorVersion || !minorVersion) {
@@ -145,7 +167,13 @@ export default class Libraries {
     return `${machineName} ${majorVersion}.${minorVersion}`;
   }
 
+  /**
+   * Check whether the library is an editor library.
+   * @param {string} uberName Uber name of the library.
+   * @returns {boolean} True if the library is an editor library, false otherwise.
+   */
   isEditorLibrary(uberName) {
+    // Starting the ubername with H5PEditor is merely a convention.
     if (!uberName.startsWith('H5PEditor.')) {
       return false;
     }
