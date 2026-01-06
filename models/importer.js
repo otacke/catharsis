@@ -213,7 +213,6 @@ export default class Importer {
 
       let zipFilePath;
       if (typeof input === 'string') {
-        validateFilePath(input, this.tempPath);
         // Copy validated file to temp directory to prevent TOCTOU
         const copiedZipPath = path.join(tempFolderPath, 'uploaded.zip');
         copyFileSync(input, copiedZipPath);
