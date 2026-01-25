@@ -365,12 +365,17 @@ export default class Libraries {
   /**
    * Get the folder path for the library specified by the uber name.
    * @param {string} uberName Uber name of the library.
+   * @param {object} options Options for getting the folder path.
+   * @param {boolean} options.exact If true, return the folder path only if the exact version exists.
    * @returns {string|undefined} Folder path or undefined if not found.
    */
-  getFolderPath(uberName) {
+  getFolderPath(uberName, options = {}) {
     const { machineName, majorVersion, minorVersion } = decomposeUberName(uberName);
 
-    const libraryJson = this.getLibraryJson(machineName);
+    const libraryJson = options.exact ?
+      this.getLibraryJson(uberName, { exact: true }) :
+      this.getLibraryJson(machineName);
+
     if (!libraryJson) {
       return;
     }

@@ -45,14 +45,17 @@ export default class Exporter {
         return child !== undefined;
       })
       .forEach((dependencyUberName) => {
-        const sourceFolder = libraries.getFolderPath(dependencyUberName);
+        const sourceFolder = libraries.getFolderPath(dependencyUberName, { exact: true });
         if (!sourceFolder) {
-          console.error(chalk.red(`Library source folder not found for ${dependencyUberName}`));
+          console.error(
+            chalk.red(`Library source folder not found for ${dependencyUberName} for export of ${machineName}`),
+          );
         }
+        else {
+          const destinationFolder = path.join(tempExportPath, path.basename(sourceFolder));
 
-        const destinationFolder = path.join(tempExportPath, path.basename(sourceFolder));
-
-        cpSync(sourceFolder, destinationFolder, { recursive: true });
+          cpSync(sourceFolder, destinationFolder, { recursive: true });
+        }
       });
 
     const library = libraries.getLibraryJson(machineName);
