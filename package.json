@@ -20,7 +20,7 @@
     "ajv": "^8.20.0",
     "chalk": "^6.0.1",
     "express": "^5.2.1",
-    "express-rate-limit": "^8.7.0",
+    "express-rate-limit": "^8.7.1",
     "multer": "^2.4.0",
     "node-cron": "^4.6.0",
     "sanitize-html": "^2.18.0",
